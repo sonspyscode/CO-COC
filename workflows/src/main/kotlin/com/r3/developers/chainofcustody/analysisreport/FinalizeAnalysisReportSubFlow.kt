@@ -1,6 +1,6 @@
-package com.r3.developers.cordapptemplate.utxoexample.workflows
+package com.r3.developers.chainofcustody.analysisreport
 
-import com.r3.developers.cordapptemplate.utxoexample.states.ChatState
+import com.r3.developers.chainofcustody.states.AnalysisReportState
 import net.corda.v5.application.flows.*
 import net.corda.v5.application.messaging.FlowMessaging
 import net.corda.v5.application.messaging.FlowSession
@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory
 
 // @InitiatingFlow declares the protocol which will be used to link the initiator to the responder.
 // @InitiatingFlow mendeklarasikan protokol yang akan digunakan untuk menghubungkan inisiator ke responder.
-@InitiatingFlow(protocol = "finalize-chat-protocol")
-class FinalizeChatSubFlow(private val signedTransaction: UtxoSignedTransaction, private val otherMember: MemberX500Name): SubFlow<String> {
+@InitiatingFlow(protocol = "finalize-analysisreport-protocol")
+class FinalizeAnalysisReportSubFlow(private val signedTransaction: UtxoSignedTransaction, private val otherMember: MemberX500Name): SubFlow<String> {
 
     private companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
@@ -33,35 +33,35 @@ class FinalizeChatSubFlow(private val signedTransaction: UtxoSignedTransaction, 
     @Suspendable
     override fun call(): String {
 
-        log.info("FinalizeChatFlow.call() called")
+        log.info("FinalizeAnalysisReportFlow.call() called")
 
-            // Initiates a session with the other Member.
-            // Memulai sesi dengan Anggota lain.
-            val session = flowMessaging.initiateFlow(otherMember)
+        // Initiates a session with the other Member.
+        // Memulai sesi dengan Anggota lain.
+        val session = flowMessaging.initiateFlow(otherMember)
 
-            return try {
-                // Calls the Corda provided finalise() function which gather signatures from the counterparty,
-                // notarises the transaction and persists the transaction to each party's vault.
-                // On success returns the id of the transaction created. (This is different to the ChatState id)
-                // Memanggil fungsi finalise() yang disediakan Corda yang mengumpulkan tanda tangan dari rekanan,
-                // mencatat transaksi dan menyimpan transaksi ke brankas masing-masing pihak.
-                // Jika berhasil, kembalikan id dari transaksi yang dibuat. (Ini berbeda dengan id ChatState)
-                val finalizedSignedTransaction = ledgerService.finalize(
-                    signedTransaction,
-                    listOf(session)
-                )
-                // Returns the transaction id converted to a string.
-                // Mengembalikan id transaksi yang dikonversi menjadi sebuah string.
-                finalizedSignedTransaction.transaction.id.toString().also {
-                    log.info("Success! Response: $it")
-                }
+        return try {
+            // Calls the Corda provided finalise() function which gather signatures from the counterparty,
+            // notarises the transaction and persists the transaction to each party's vault.
+            // On success returns the id of the transaction created. (This is different to the ChatState id)
+            // Memanggil fungsi finalise() yang disediakan Corda yang mengumpulkan tanda tangan dari rekanan,
+            // mencatat transaksi dan menyimpan transaksi ke brankas masing-masing pihak.
+            // Jika berhasil, kembalikan id dari transaksi yang dibuat. (Ini berbeda dengan id ChatState)
+            val finalizedSignedTransaction = ledgerService.finalize(
+                signedTransaction,
+                listOf(session)
+            )
+            // Returns the transaction id converted to a string.
+            // Mengembalikan id transaksi yang dikonversi menjadi sebuah string.
+            finalizedSignedTransaction.transaction.id.toString().also {
+                log.info("Success! Response: $it")
             }
-            // Soft fails the flow and returns the error message without throwing a flow exception.
-            // Soft gagal dalam aliran dan mengembalikan pesan kesalahan tanpa melemparkan pengecualian aliran.
-            catch (e: Exception) {
-                log.warn("Finality failed", e)
-                "Finality failed, ${e.message}"
-            }
+        }
+        // Soft fails the flow and returns the error message without throwing a flow exception.
+        // Soft gagal dalam aliran dan mengembalikan pesan kesalahan tanpa melemparkan pengecualian aliran.
+        catch (e: Exception) {
+            log.warn("Finality failed", e)
+            "Finality failed, ${e.message}"
+        }
     }
 }
 
@@ -69,8 +69,8 @@ class FinalizeChatSubFlow(private val signedTransaction: UtxoSignedTransaction, 
 
 //@InitiatingBy declares the protocol which will be used to link the initiator to the responder.
 //@InitiatingBy mendeklarasikan protokol yang akan digunakan untuk menghubungkan inisiator ke responder.
-@InitiatedBy(protocol = "finalize-chat-protocol")
-class FinalizeChatResponderFlow: ResponderFlow {
+@InitiatedBy(protocol = "finalize-analysisreport-protocol")
+class FinalizeCaseReportResponderFlow: ResponderFlow {
 
     private companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
@@ -84,7 +84,7 @@ class FinalizeChatResponderFlow: ResponderFlow {
     @Suspendable
     override fun call(session: FlowSession) {
 
-        log.info("FinalizeChatResponderFlow.call() called")
+        log.info("FinalizeAnalysisReportResponderFlow.call() called")
 
         try {
             // Calls receiveFinality() function which provides the responder to the finalise() function
@@ -97,14 +97,14 @@ class FinalizeChatResponderFlow: ResponderFlow {
 
                 // Note, this exception will only be shown in the logs if Corda Logging is set to debug.
                 // Catatan, pengecualian ini hanya akan ditampilkan di log jika Corda Logging diatur ke debug.
-                val state = ledgerTransaction.getOutputStates(ChatState::class.java).singleOrNull() ?:
-                    throw CordaRuntimeException("Failed verification - transaction did not have exactly one output ChatState.")
+                val state = ledgerTransaction.getOutputStates(AnalysisReportState::class.java).singleOrNull() ?:
+                throw CordaRuntimeException("Failed verification - transaction did not have exactly one output ChatState.")
 
                 // Uses checkForBannedWords() and checkMessageFromMatchesCounterparty() functions
                 // to check whether to sign the transaction.
                 // Menggunakan fungsi checkForBannedWords() dan checkMessageFromMatchesCounterparty()
                 // untuk memeriksa apakah akan menandatangani transaksi.
-                checkForBannedWords(state.message)
+                //          checkForBannedWords(state.message)
                 checkMessageFromMatchesCounterparty(state, session.counterparty)
 
                 log.info("Verified the transaction- ${ledgerTransaction.id}")

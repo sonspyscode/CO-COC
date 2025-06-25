@@ -21,7 +21,7 @@ allprojects {
     cordaRuntimeGradlePlugin {
         notaryVersion = cordaNotaryPluginsVersion
         notaryCpiName = "NotaryServer"
-        corDappCpiName = "MyCorDapp"
+        corDappCpiName = "DLT-BasedChainofCustody"
         cpiUploadTimeout = "30000"
         vnodeRegistrationTimeout = "60000"
         cordaProcessorTimeout = "300000"

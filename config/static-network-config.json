@@ -1,23 +1,27 @@
 [
   {
-    "x500Name" : "CN=Alice, OU=Test Dept, O=R3, L=London, C=GB",
-    "cpi" : "MyCorDapp"
+    "x500Name": "CN=Investigator, OU=CrimeInvestigationTeam, O=Org1, L=Makassar, C=ID",
+    "cpi": "DLT-BasedChainofCustody"
   },
   {
-    "x500Name" : "CN=Bob, OU=Test Dept, O=R3, L=London, C=GB",
-    "cpi" : "MyCorDapp"
+    "x500Name": "CN=Custodian, OU=CrimeInvestigationTeam, O=Org1, L=Makassar, C=ID",
+    "cpi": "DLT-BasedChainofCustody"
   },
   {
-    "x500Name" : "CN=Charlie, OU=Test Dept, O=R3, L=London, C=GB",
-    "cpi" : "MyCorDapp"
+    "x500Name": "CN=Analyst, OU=DigitalForensicLab, O=Org2, L=Makassar, C=ID",
+    "cpi": "DLT-BasedChainofCustody"
   },
   {
-    "x500Name" : "CN=Dave, OU=Test Dept, O=R3, L=London, C=GB",
-    "cpi" : "MyCorDapp"
+    "x500Name": "CN=LawOfficer, OU=LawEnforcementnValidation, O=Org3, L=Makassar, C=ID",
+    "cpi": "DLT-BasedChainofCustody"
   },
   {
-    "x500Name" : "CN=NotaryRep1, OU=Test Dept, O=R3, L=London, C=GB",
-    "cpi" : "NotaryServer",
-    "serviceX500Name": "CN=NotaryService, OU=Test Dept, O=R3, L=London, C=GB"
+    "x500Name": "CN=Validator, OU=DigitalForensicNValidatorLab, O=Org4, L=Makassar, C=ID",
+    "cpi": "DLT-BasedChainofCustody"
+  },
+  {
+    "x500Name": "CN=NotaryRep1, OU=AuditoryDept, O=Org5, L=Makassar, C=ID",
+    "cpi": "NotaryServer",
+    "serviceX500Name": "CN=NotaryService, OU=Digital Forensic Dept, O=Org5, L=Makassar, C=ID"
   }
 ]

@@ -34,4 +34,3 @@ data class ChatState(
     fun updateMessage(messageFrom: MemberX500Name, message: String) =
         copy(messageFrom = messageFrom, message = message)
 }
-

@@ -26,13 +26,13 @@ class Message(val sender: MemberX500Name, val message: String)
 // MyFirstFlow should inherit from ClientStartableFlow, which tells Corda it can be started via an REST call from a client
 class MyFirstFlow: ClientStartableFlow {
 
-    // It is useful to be able to log messages from the flows for debugging.
+    // It is useful to be able to log messages from the chainofcustody for debugging.
     private companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
 
     // Corda has a set of injectable services which are injected into the flow at runtime.
-    // Flows declare them with @CordaInjectable, then the flows have access to their services.
+    // Flows declare them with @CordaInjectable, then the chainofcustody have access to their services.
 
     // JsonMarshallingService provides a Service for manipulating json
     @CordaInject
@@ -52,7 +52,7 @@ class MyFirstFlow: ClientStartableFlow {
 
     // When a flow is invoked its call() method is called.
     // call() methods must be marked as @Suspendable, this allows Corda to pause mid-execution to wait
-    // for a response from the other flows and services.
+    // for a response from the other chainofcustody and services.
     @Suspendable
     override fun call(requestBody: ClientRequestBody): String {
 
@@ -96,10 +96,10 @@ class MyFirstFlow: ClientStartableFlow {
 // MyFirstFlowResponder is a responder flow, it's corresponding initiating flow is called MyFirstFlow (defined above)
 // to link the two sides of the flow together they need to have the same protocol.
 @InitiatedBy(protocol = "my-first-flow")
-// Responder flows must inherit from ResponderFlow
+// Responder chainofcustody must inherit from ResponderFlow
 class MyFirstFlowResponder: ResponderFlow {
 
-    // It is useful to be able to log messages from the flows for debugging.
+    // It is useful to be able to log messages from the chainofcustody for debugging.
     private companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
     }
@@ -110,10 +110,10 @@ class MyFirstFlowResponder: ResponderFlow {
     lateinit var memberLookup: MemberLookup
 
 
-    // Responder flows are invoked when an initiating flow makes a call via a session set up with the Virtual
+    // Responder chainofcustody are invoked when an initiating flow makes a call via a session set up with the Virtual
     // node hosting the Responder flow. When a responder flow is invoked, its call() method is called.
     // call() methods must be marked as @Suspendable, this allows Corda to pause mid-execution to wait
-    // for a response from the other flows and services/
+    // for a response from the other chainofcustody and services/
     // The Call method has the flow session passed in as a parameter by Corda so the session is available to
     // responder flow code, you don't need to inject the FlowMessaging service.
     @Suspendable
