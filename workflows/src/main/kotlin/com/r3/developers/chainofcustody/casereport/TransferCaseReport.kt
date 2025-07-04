@@ -1,12 +1,11 @@
 /*
 RequestBody for triggering the flow via REST:
 {
-    "clientRequestId": "transferDE-1",
+    "clientRequestId": "transferCR-01",
     "flowClassName": "com.r3.developers.chainofcustody.casereport.TransferCaseReportFlow",
     "requestBody": {
         "idCase":"identifier untuk suatu digital evidence",
         "holderCase":"MemberX500Name"
-        "participants": "MemberX500Name"
         }
 }
  */
@@ -24,14 +23,13 @@ import net.corda.v5.base.exceptions.CordaRuntimeException
 import net.corda.v5.base.types.MemberX500Name
 import net.corda.v5.ledger.utxo.UtxoLedgerService
 import org.slf4j.LoggerFactory
-import java.security.PublicKey
 import java.time.Duration
 import java.time.Instant
 import java.util.*
 
 // A class to hold the deserialized arguments required to start the flow.
 data class TransferCaseReportFlowArgs(
-    val idCase: UUID, val holderCase: MemberX500Name, val participants: List<PublicKey>)
+    val idCase: UUID, val holderCase: MemberX500Name)
 
 
 // See Chat CorDapp Design section of the getting started docs for a description of this flow.
@@ -74,14 +72,25 @@ class TransferCaseReportFlow: ClientStartableFlow {
 
             // Get MemberInfos for the Vnode running the flow and the otherMember.
             val myInfo = memberLookup.myInfo()
+
             val state = stateAndRef.state.contractState
+            val participantsKey = state.participants
+            val allMembers = participantsKey.map { key ->
+                memberLookup.lookup(key) ?: throw CordaRuntimeException("Member not found from public key: $key")
+            }
 
-            val members = state.participants.map {
-                memberLookup.lookup(it) ?: throw CordaRuntimeException("Member not found from public key $it.")}
-            val otherMember = (members - myInfo).singleOrNull()
-                ?: throw CordaRuntimeException("Should be only one participant other than the initiator.")
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+//            val allowedCommonName = "Custodian"
+            val allowedOrgs = listOf("Org1", "Org3")
+            // Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Analysis Report.")
+            }
 
-            val custodyTracker = CustodyInteraction (
+            val otherMembers = allMembers.filter { it.name != myInfo.name }
+            val parties = otherMembers.map { it.name }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Case-Report",
                 officerName = myInfo.name,
                 newHolder = flowArgs.holderCase,
@@ -89,12 +98,10 @@ class TransferCaseReportFlow: ClientStartableFlow {
                 timestamp = Instant.now()
             )
 
-            val updateTracker = listOf(custodyTracker)
-
             // Create a new ChatState using the updateMessage helper function.
             val newCaseReportState = state.transferCaseReport(
-                holderCaseReport = myInfo.name, custodyHistory = updateTracker,
-                participants = flowArgs.participants)
+                holderCaseReport = myInfo.name,
+                custodyHistory = state.custodyHistory + custodyInteraction)
 
             // Use UTXOTransactionBuilder to build up the draft transaction.
             val txBuilder= ledgerService.createTransactionBuilder()
@@ -113,7 +120,7 @@ class TransferCaseReportFlow: ClientStartableFlow {
             // Call FinalizeChatSubFlow which will finalise the transaction.
             // If successful the flow will return a String of the created transaction id,
             // if not successful it will return an error message.
-            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, otherMember.name))
+            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, parties))
 
 
         }

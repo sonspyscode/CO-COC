@@ -9,10 +9,10 @@ import java.time.Instant
 import java.util.*
 
 
-// The ChatState represents data stored on ledger. A chat consists of a linear series of messages between two
-// participants and is represented by a UUID. Any given pair of participants can have multiple chats
-// Each ChatState stores one message between the two participants in the chat. The backchain of ChatStates
-// represents the history of the chat.
+// AnalysisReportState merepresentasikan data yang disimpan di Ledger.
+// Sebuah laporan kasus terdiri dari serangkaian data linear antara dua partisipan atau lebih dan diwakili oleh UUID.
+// Setiap organisasi dapat memiliki beberapa data untuk suatu laporannya sendiri
+// Setiap AnalysisReportState menyimpan satu data bukti digital antara dua partisipan atau lebih dalam suatu laporan. Backchain pada CaseReportState merepresentasikan riwayat perubahan pada suatu laporan analysis bukti digital tertentu.
 
 @BelongsToContract(AnalysisReportContract::class)
 data class AnalysisReportState(
@@ -53,8 +53,8 @@ data class AnalysisReportState(
             hashMD5 = hashMD5, sourceFile = sourceFile, fileLocation = fileLocation,
             potentialInfo = potentialInfo, custodyHistory = custodyHistory)
 
-    fun transferAnalysisReport(holderAnalysisReport: MemberX500Name) =
-        copy(holderAnalysisReport= holderAnalysisReport)
+//    fun transferAnalysisReport(holderAnalysisReport: MemberX500Name) =
+//        copy(holderAnalysisReport= holderAnalysisReport)
 
 //    fun AddAnalysisReport2DigitalEvidence(labReport: List<AnalysisReportState>) =
 //        copy(labReport = labReport)

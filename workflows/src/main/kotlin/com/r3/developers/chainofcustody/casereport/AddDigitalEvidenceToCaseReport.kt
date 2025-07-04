@@ -4,8 +4,8 @@ RequestBody for triggering the flow via REST:
     "clientRequestId": "transferDE-1",
     "flowClassName": "com.r3.developers.chainofcustody.casereport.AddDigitalEvidenceToCaseReportFlow",
     "requestBody": {
-        "id":"identifier untuk suatu digital evidence",
-        "digitalEvidencePack":"MemberX500Name"
+        "idCase":"identifier untuk suatu digital evidence",
+        "digitalEvidencePack":"List id evidence"
         }
 }
  */
@@ -15,6 +15,7 @@ package com.r3.developers.chainofcustody.casereport
 import com.r3.developers.chainofcustody.contracts.DigitalEvidenceContract
 import com.r3.developers.chainofcustody.states.CaseReportState
 import com.r3.developers.chainofcustody.states.CustodyInteraction
+import com.r3.developers.chainofcustody.states.DigitalEvidenceState
 import net.corda.v5.application.flows.*
 import net.corda.v5.application.marshalling.JsonMarshallingService
 import net.corda.v5.application.membership.MemberLookup
@@ -22,7 +23,6 @@ import net.corda.v5.base.annotations.CordaSerializable
 import net.corda.v5.base.annotations.Suspendable
 import net.corda.v5.base.exceptions.CordaRuntimeException
 import net.corda.v5.ledger.utxo.UtxoLedgerService
-import net.corda.v5.ledger.utxo.StateRef
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.Instant
@@ -30,8 +30,8 @@ import java.util.*
 
 @CordaSerializable
 data class AddDigitalEvidenceToCaseReportFlowArgs(
-    val id: UUID,
-    val digitalEvidencePack: List<StateRef>
+    val idCase: UUID,
+    val digitalEvidencePack: List<UUID>
 )
 
 class AddDigitalEvidenceToCaseReportFlow : ClientStartableFlow {
@@ -60,30 +60,48 @@ class AddDigitalEvidenceToCaseReportFlow : ClientStartableFlow {
             val flowArgs = requestBody.getRequestBodyAs(jsonMarshallingService, AddDigitalEvidenceToCaseReportFlowArgs::class.java)
 
             val stateAndRef = ledgerService.findUnconsumedStatesByExactType(CaseReportState::class.java, 100, Instant.now()).results.singleOrNull {
-                it.state.contractState.idCase == flowArgs.id
-            } ?: throw CordaRuntimeException("Multiple or zero Digital Evidence states with id ${flowArgs.id} found.")
+                it.state.contractState.idCase == flowArgs.idCase
+            } ?: throw CordaRuntimeException("Multiple or zero Case Report states with id ${flowArgs.idCase} found.")
 
             // Get MemberInfos for the Vnode running the flow and the otherMember.
             val myInfo = memberLookup.myInfo()
             val state = stateAndRef.state.contractState
 
-            val members = state.participants.map {
-                memberLookup.lookup(it) ?: throw CordaRuntimeException("Member not found from public key $it.")}
-            val otherMember = (members - myInfo).singleOrNull()
-                ?: throw CordaRuntimeException("Should be only one participant other than the initiator.")
+            val evidenceRef = flowArgs.digitalEvidencePack.map { uuid ->
+                ledgerService.findUnconsumedStatesByExactType(DigitalEvidenceState::class.java, 100, Instant.now())
+                    .results.singleOrNull { it.state.contractState.id == uuid }
+                    ?: throw CordaRuntimeException ("Evidence with ID $uuid not found")
+            }
 
-            val custodyTracker = CustodyInteraction (
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+            val allowedCommonName = "Custodian"
+            val allowedOrgs = listOf("Org1", "Org3")
+
+            // Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to add Evidence Pack in Case Report.")
+            }
+
+            // Pendefinisian untuk semua partisipan selain inisiator flow
+            val participantsKey = state.participants
+            val allMembers = participantsKey.map { key ->
+                memberLookup.lookup(key) ?: throw CordaRuntimeException("Member not found from public key: $key")
+            }
+
+            val otherMembers = allMembers.filter { it.name != myInfo.name }
+            val parties = otherMembers.map { it.name }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Case-Report",
                 officerName = myInfo.name,
-                interaction = "Add Digital Evidence ${flowArgs.digitalEvidencePack} to case report with ID ${flowArgs.id}",
+                interaction = "Add Digital Evidence ${flowArgs.digitalEvidencePack} to case report with ID ${flowArgs.idCase}",
                 timestamp = Instant.now()
             )
 
-            val updateTracker = listOf(custodyTracker)
-
             // Tambahkan lab report (reference)
             val newCaseReportState = state.addDigitalEvidenceToCaseReport(
-                flowArgs.digitalEvidencePack, custodyHistory = updateTracker)
+                digitalEvidencePack = state.digitalEvidencePack + flowArgs.digitalEvidencePack,
+                custodyHistory = state.custodyHistory + custodyInteraction)
 
 // Use UTXOTransactionBuilder to build up the draft transaction.
             val txBuilder= ledgerService.createTransactionBuilder()
@@ -93,6 +111,7 @@ class AddDigitalEvidenceToCaseReportFlow : ClientStartableFlow {
                 .addInputState(stateAndRef.ref)
                 .addCommand(DigitalEvidenceContract.AddLabReport())
                 .addSignatories(newCaseReportState.participants)
+            evidenceRef.forEach { txBuilder.addReferenceState(it.ref) }
 
             // Convert the transaction builder to a UTXOSignedTransaction. Verifies the content of the
             // UtxoTransactionBuilder and signs the transaction with any required signatories that belong to
@@ -102,7 +121,7 @@ class AddDigitalEvidenceToCaseReportFlow : ClientStartableFlow {
             // Call FinalizeChatSubFlow which will finalise the transaction.
             // If successful the flow will return a String of the created transaction id,
             // if not successful it will return an error message.
-            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, otherMember.name))
+            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, parties))
 
 
         }

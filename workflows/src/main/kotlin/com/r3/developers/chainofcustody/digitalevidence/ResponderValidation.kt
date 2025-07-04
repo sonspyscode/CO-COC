@@ -18,7 +18,7 @@ import net.corda.v5.base.types.MemberX500Name
 // Checks that the messageFrom field in the ChatState matches the initiators (otherMember)
 // memberX500Name, if not it throws an exception.
 @Suspendable
-fun checkMessageFromMatchesCounterparty(state: DigitalEvidenceState, otherMember: MemberX500Name) {
-    if( state.holderEvidence != otherMember)
+fun checkMessageFromMatchesCounterparty(state: DigitalEvidenceState, participants: MemberX500Name) {
+    if( state.holderEvidence != participants)
         throw CordaRuntimeException("Failed verification - messageFrom does not equal flow initiator memberX500Name")
 }

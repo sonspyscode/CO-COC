@@ -19,12 +19,15 @@ class AnalysisReportContract: Contract {
 
         const val CREATE_COMMAND_SHOULD_HAVE_NO_INPUT_STATES = "When command is Create there should be no input states."
         const val CREATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is Create there should be one and only one output state."
+        const val CREATE_AR_COMMAND_JUST_FOR_LAB_MEMBER_ONLY = "Only analyst form org2 and org 4 can create analysis report"
 
         const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update there should be one and only one input state."
         const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Update there should be one and only one output state."
         const val UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Update id must not change."
         const val UPDATE_COMMAND_IDEVIDENCE_SHOULD_NOT_CHANGE = "When command is Update Identifier Evidence must not change."
         const val UPDATE_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Update CID must not change."
+        const val UPDATE_COMMAND_SHA1_SHOULD_NOT_CHANGE = "When command is Update SHA1 must not change."
+        const val UPDATE_COMMAND_MD5_SHOULD_NOT_CHANGE = "When command is Update MD5 must not change."
         const val UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Update participants must not change."
         const val UPDATE_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Update, only holder of digital evidence can do it."
     }
@@ -58,6 +61,12 @@ class AnalysisReportContract: Contract {
             is Create -> {
                 CREATE_COMMAND_SHOULD_HAVE_NO_INPUT_STATES using (transaction.inputContractStates.isEmpty())
                 CREATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE using (transaction.outputContractStates.size == 1)
+//                val input = transaction.inputContractStates.single() as AnalysisReportState
+                CREATE_AR_COMMAND_JUST_FOR_LAB_MEMBER_ONLY using {
+                    val output = transaction.outputContractStates.single() as AnalysisReportState
+                        output.holderAnalysisReport.organization == "Org2" ||
+                                output.holderAnalysisReport.organization == "Org4"
+                }
             }
             // Rules applied only to transactions with the Update Command.
             is Update -> {
@@ -69,6 +78,8 @@ class AnalysisReportContract: Contract {
                 UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE using (input.idReport == output.idReport)
                 UPDATE_COMMAND_IDEVIDENCE_SHOULD_NOT_CHANGE using (input.idEvidence == output.idEvidence)
                 UPDATE_COMMAND_CID_SHOULD_NOT_CHANGE using (input.cidDE == output.cidDE)
+                UPDATE_COMMAND_SHA1_SHOULD_NOT_CHANGE using (input.hashSHA1 == output.hashSHA1)
+                UPDATE_COMMAND_MD5_SHOULD_NOT_CHANGE using (input.hashMD5 == output.hashMD5)
                 UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (
                         input.participants.toSet().intersect(output.participants.toSet()).size >= 2)
                 UPDATE_COMMAND_JUST_FOR_HOLDER_ONLY using (input.holderAnalysisReport == output.holderAnalysisReport)

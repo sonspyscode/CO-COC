@@ -9,11 +9,10 @@ import java.security.PublicKey
 import java.time.Instant
 import java.util.*
 
-
-// The ChatState represents data stored on ledger. A chat consists of a linear series of messages between two
-// participants and is represented by a UUID. Any given pair of participants can have multiple chats
-// Each ChatState stores one message between the two participants in the chat. The backchain of ChatStates
-// represents the history of the chat.
+// CaseReportState merepresentasikan data yang disimpan di Ledger.
+// Sebuah laporan kasus terdiri dari serangkaian data linear antara dua partisipan atau lebih dan diwakili oleh UUID.
+// Setiap organisasi dapat memiliki beberapa data untuk suatu laporannya sendiri
+// Setiap CaseReportState menyimpan satu data bukti digital antara dua partisipan atau lebih dalam suatu laporan. Backchain pada CaseReportState merepresentasikan riwayat perubahan pada suatu laporan kasus.
 
 @BelongsToContract(CaseReportContract::class)
 data class CaseReportState(
@@ -30,7 +29,7 @@ data class CaseReportState(
     // Lokasi
     val locationCase: String,
     // Tanggal dan waktu
-    val dateNtime: Instant,
+    val dateNtime: String,
     // Alat yang digunakan
     val toolName: String,
     // deskripsi alat yang digunakan
@@ -46,7 +45,7 @@ data class CaseReportState(
     // Nama pemilik laporan
     val holderCaseReport: MemberX500Name,
     // Daftar reference state untuk bukti digital
-    val digitalEvidencePack: List<StateRef>,
+    val digitalEvidencePack: List<UUID>,
     // History interaksi pada CoC
     val custodyHistory: List<CustodyInteraction>,
     // The participants to the chat, represented by their public key.
@@ -55,21 +54,24 @@ data class CaseReportState(
         return participants
     }
 
-    // Helper function to create a new DigitalEvidenceState from the previous (input) DigitalEvidenceState.
+    // Helper function untuk memperbarui laporan kasus.
     fun updateCaseReport(caseName: String, suspectName: String, victimName: String,
-                              locationCase: String, dateNtime: Instant, toolName: String, toolDesc: String,
+                              locationCase: String, dateNtime: String, toolName: String, toolDesc: String,
                                     statusCase: String, custodyHistory: List<CustodyInteraction>) =
         copy(caseName = caseName, suspectName = suspectName, victimName = victimName,
                 locationCase = locationCase, dateNtime = dateNtime, toolName = toolName, toolsDesc = toolDesc,
                      statusCase = statusCase, custodyHistory = custodyHistory)
 
-    fun transferCaseReport(holderCaseReport : MemberX500Name, custodyHistory: List<CustodyInteraction>, participants: List<PublicKey>) =
-        copy(holderCaseReport = holderCaseReport, custodyHistory = custodyHistory, participants = participants)
+    // Hlper function untuk memindahkan holder suatu laporan kasus
+    fun transferCaseReport(holderCaseReport : MemberX500Name, custodyHistory: List<CustodyInteraction>) =
+        copy(holderCaseReport = holderCaseReport, custodyHistory = custodyHistory)
 
+    // Helper function untuk mengubah status validasi dokumen bukti dari suatu laporan kasus
     fun validationCaseReport(validationStatus: String, custodyHistory: List<CustodyInteraction>) =
         copy(validationStatus = validationStatus, custodyHistory = custodyHistory)
 
-    fun addDigitalEvidenceToCaseReport(digitalEvidencePack: List<StateRef>, custodyHistory: List<CustodyInteraction>) =
+    // Helper function untuk menambahkan reference state digital evidence pada suatu laporan kasus tertentu
+    fun addDigitalEvidenceToCaseReport(digitalEvidencePack: List<UUID>, custodyHistory: List<CustodyInteraction>) =
         copy(digitalEvidencePack = digitalEvidencePack, custodyHistory = custodyHistory)
 
 }

@@ -1,22 +1,22 @@
 /*
 Example of RequestBody for triggering the flow via REST:
-
 {
   "clientRequestId": "createCR-01",
-    "flowClassName": "com.r3.developers.chainofcustody.digitalevidence.CreateCaseReport",
+    "flowClassName": "com.r3.developers.chainofcustody.casereport.CreateCaseReportFlow",
     "requestBody": {
-        "caseNumber":"content identifier",
-        "caseName":"DE-01821398",
-        "suspectName":"flashdisk",
-        "victimName":"lite",
-        "locationCase":"Sundis",
-        "dateNtime":"Sundis-01821379823",
-        "toolName":"file yang berisi informasi yang diduga berita hoax",
-        "toolsDesc":"CC-001",
-        "firstResponder":"pak rudi"
-        "organisationName":"org1"
-        "validationStatus":"VALIDATE"
-        "otherMember":"CN=Custodian, OU=CrimeInvestigationTeam, O=Org1, L=Makassar, C=ID"
+        "caseNumber": "CNum-001",
+        "caseName": "CN-01821398",
+        "suspectName": "Alucard",
+        "victimName": "Hylos",
+        "locationCase": "BTN Land of Dawn",
+        "dateNtime": "01/01/2020 12:12:00",
+        "toolName": "FTKImager",
+        "toolsDesc": "Tools akuisisi data",
+        "firstResponder": "Investigator",
+        "organisationName": "Organisasi 1",
+        "statusCase": "ACTIVE",
+        "validationStatus": "ON PROGRESS",
+        "otherMember": "CN=Custodian, OU=CrimeInvestigationTeam, O=Org1, L=Makassar, C=ID"
    }
 }
  */
@@ -35,22 +35,25 @@ import net.corda.v5.base.types.MemberX500Name
 import net.corda.v5.ledger.common.NotaryLookup
 import net.corda.v5.ledger.utxo.UtxoLedgerService
 import org.slf4j.LoggerFactory
+import java.security.PublicKey
 import java.time.Duration
 import java.time.Instant
+import java.util.UUID
 
 // A class to hold the deserialized arguments required to start the flow.
 // Kelas untuk menampung argumen deserialisasi yang diperlukan untuk memulai aliran.
 data class CreateCaseReportFlowArgs(val caseNumber: String, val caseName: String,
-                                         val suspectName: String, val victimName: String,
-                                            val locationCase: String, val dateNtime: String,
-                                                val toolName: String, val toolsDesc: String, val firstResponder: String,
-                                                    val organisationName: String, val statusCase: String,
-                                                        val validationStatus: String, val otherMember: String)
+                                    val suspectName: String, val victimName: String,
+                                    val locationCase: String, val dateNtime: String,
+                                    val toolName: String, val toolsDesc: String, val firstResponder: String,
+                                    val organisationName: String, val statusCase: String,
+                                    val validationStatus: String,
+                                    val otherMember: List<String>)
 
 
 // See Chat CorDapp Design section of the getting started docs for a description of this flow.
 //Lihat bagian Desain Chat CorDapp pada dokumen memulai untuk deskripsi alur ini.
-class CreateDigitalEvidenceFlow: ClientStartableFlow {
+class CreateCaseReportFlow: ClientStartableFlow {
 
     private companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
@@ -78,7 +81,7 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
     @Suspendable
     override fun call(requestBody: ClientRequestBody): String {
 
-        log.info("CreateDigitalEvidenceFlow.call() called")
+        log.info("CreateCaseReportFlow.call() called")
 
         try {
             // Obtain the deserialized input arguments to the flow from the requestBody.
@@ -94,18 +97,32 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
             // Catatan, di Java CorDapps hanya RuntimeExceptions yang tidak dicentang yang bisa dilempar, bukan
             // pengecualian yang dicentang karena ini mengubah tanda tangan metode dan merusak override.
             val myInfo = memberLookup.myInfo()
-            val otherMember = memberLookup.lookup(MemberX500Name.parse(flowArgs.otherMember)) ?:
-            throw CordaRuntimeException("MemberLookup can't find otherMember specified in flow arguments.")
 
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+            val allowedCommonName = "Investigator"
+            val allowedOrgs = listOf("Org1", "Org3")
 
-            val custodyTracker = CustodyInteraction (
+            // Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Case Report.")
+            }
+
+            val otherMembers = flowArgs.otherMember.map { memberString ->
+                 memberLookup.lookup(MemberX500Name.parse(memberString)) ?:
+                    throw CordaRuntimeException("Can't find otherMember $memberString  in flow arguments.")
+            }
+
+            val allParticipants: List<PublicKey> = listOf(myInfo.ledgerKeys.first()) + otherMembers.map { it.ledgerKeys.first() }
+
+            val partyMembers = otherMembers
+            val parties = partyMembers.map { it.name }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Case-Report",
                 officerName = myInfo.name,
                 interaction = "CREATE Case Report with number ${flowArgs.caseNumber}",
                 timestamp = Instant.now()
             )
-
-            val updateTracker = listOf(custodyTracker)
 
             // Create the ChatState from the input arguments and member information.
             //Buat ChatState dari argumen masukan dan informasi anggota.
@@ -115,7 +132,7 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
                 suspectName = flowArgs.suspectName,
                 victimName = flowArgs.victimName,
                 locationCase = flowArgs.locationCase,
-                dateNtime = Instant.now(),
+                dateNtime = flowArgs.dateNtime,
                 toolName = flowArgs.toolName,
                 toolsDesc = flowArgs.toolsDesc,
                 firstResponder = flowArgs.firstResponder,
@@ -123,9 +140,9 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
                 statusCase = flowArgs.statusCase,
                 validationStatus = flowArgs.validationStatus,
                 holderCaseReport = myInfo.name,
-                digitalEvidencePack = emptyList(),
-                custodyHistory = updateTracker,
-                participants = listOf(myInfo.ledgerKeys.first(), otherMember.ledgerKeys.first())
+                digitalEvidencePack = listOf(),
+                custodyHistory = listOf(custodyInteraction),
+                participants = allParticipants
             )
 
             // Obtain the notary.
@@ -155,9 +172,8 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
             // Panggil FinalizeDigitalEvidenceSubFlow yang akan menyelesaikan transaksi.
             // Jika berhasil, alur akan mengembalikan sebuah String dari id transaksi yang dibuat,
             // jika tidak berhasil, alur akan mengembalikan pesan kesalahan.
-            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, otherMember.name))
 
-
+            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, parties))
         }
         // Catch any exceptions, log them and rethrow the exception.
         // Tangkap pengecualian apa pun, catat, dan buang pengecualian tersebut.

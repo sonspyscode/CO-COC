@@ -1,19 +1,19 @@
 /*
 RequestBody for triggering the flow via REST:
 {
-  "clientRequestId": "updateDE-01",
+  "clientRequestId": "updateDE-02",
     "flowClassName": "com.r3.developers.chainofcustody.casereport.UpdateCaseReportFlow",
     "requestBody": {
-        "idCase":"identifier evidence",
-        "caseNumber":"content identifier",
-        "caseName":"DE-01821398",
-        "suspectName":"flashdisk",
-        "victimName":"lite",
-        "locationCase":"Sundis",
-        "dateNtime":"Sundis-01821379823",
-        "toolName":"file yang berisi informasi yang diduga berita hoax",
-        "toolsDesc":"CC-001",
-        "statusCase":"Active"
+        "idCase": "f7dbb529-6655-419f-9871-c75f46b0c593",
+        "caseNumber": "CNum-001x",
+        "caseName": "CN-001",
+        "suspectName": "Alucard dan Lapulapu",
+        "victimName": "Hylos",
+        "locationCase": "BTN Land of Dawn",
+        "dateNtime": "01/01/2020 12:12:00",
+        "toolName": "FTK Imager",
+        "toolDesc": "Alat akusisi",
+        "statusCase": "ACTIVE"
         }
 }
  */
@@ -38,7 +38,7 @@ import java.util.*
 data class UpdateCaseReportFlowArgs(val idCase: UUID, val caseNumber: String,
                                          val caseName: String, val suspectName: String,
                                             val victimName: String, val locationCase: String,
-                                                val dateNtime: Instant, val toolName: String,
+                                                val dateNtime: String, val toolName: String,
                                                     val toolDesc: String, val statusCase: String)
 
 
@@ -82,26 +82,39 @@ class UpdateCaseReportFlow: ClientStartableFlow {
 
             // Get MemberInfos for the Vnode running the flow and the otherMember.
             val myInfo = memberLookup.myInfo()
+
             val state = stateAndRef.state.contractState
+            val participantsKey = state.participants
+            val allMembers = participantsKey.map { key ->
+                memberLookup.lookup(key) ?: throw CordaRuntimeException("Member not found from public key: $key")
+            }
 
-            val members = state.participants.map {
-                memberLookup.lookup(it) ?: throw CordaRuntimeException("Member not found from public key $it.")}
-            val otherMember = (members - myInfo).singleOrNull()
-                ?: throw CordaRuntimeException("Should be only one participant other than the initiator.")
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+            val allowedCommonName = "Custodian"
+            val allowedOrgs = listOf("Org1", "Org3")
 
-            val custodyTracker = CustodyInteraction (
+            // Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Analysis Report.")
+            }
+
+            val otherMembers = allMembers.filter { it.name != myInfo.name }
+            val parties = otherMembers.map { it.name }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Case-Report",
                 officerName = myInfo.name,
                 interaction = "UPDATE case report by ${myInfo.name}",
                 timestamp = Instant.now()
             )
 
-            val updateTracker = listOf(custodyTracker)
-
             // Create a new ChatState using the updateMessage helper function.
-            val newCaseReportState = state.updateCaseReport(caseName = flowArgs.caseName, suspectName = flowArgs.suspectName,
-                victimName = flowArgs.victimName, locationCase = flowArgs.locationCase, dateNtime = flowArgs.dateNtime,
-                toolName = flowArgs.toolName, toolDesc = flowArgs.toolDesc, statusCase = flowArgs.statusCase, custodyHistory = updateTracker)
+            val newCaseReportState = state.updateCaseReport(
+                caseName = flowArgs.caseName, suspectName = flowArgs.suspectName,
+                victimName = flowArgs.victimName, locationCase = flowArgs.locationCase,
+                dateNtime = flowArgs.dateNtime, toolName = flowArgs.toolName,
+                toolDesc = flowArgs.toolDesc, statusCase = flowArgs.statusCase,
+                custodyHistory = state.custodyHistory + custodyInteraction)
 
             // Use UTXOTransactionBuilder to build up the draft transaction.
             val txBuilder= ledgerService.createTransactionBuilder()
@@ -120,7 +133,7 @@ class UpdateCaseReportFlow: ClientStartableFlow {
             // Call FinalizeChatSubFlow which will finalise the transaction.
             // If successful the flow will return a String of the created transaction id,
             // if not successful it will return an error message.
-            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, otherMember.name))
+            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, parties))
 
 
         }

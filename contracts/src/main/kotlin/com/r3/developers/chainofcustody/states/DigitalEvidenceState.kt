@@ -1,21 +1,18 @@
 package com.r3.developers.chainofcustody.states
 
-import com.r3.developers.chainofcustody.contracts.AnalysisReportContract
 import com.r3.developers.chainofcustody.contracts.DigitalEvidenceContract
 import net.corda.v5.base.types.MemberX500Name
 import net.corda.v5.ledger.utxo.BelongsToContract
 import net.corda.v5.ledger.utxo.ContractState
 import net.corda.v5.ledger.utxo.StateRef
 import java.security.PublicKey
-import java.time.Instant
 import java.util.*
-import javax.swing.plaf.nimbus.State
 
 
-// The ChatState represents data stored on ledger. A chat consists of a linear series of messages between two
-// participants and is represented by a UUID. Any given pair of participants can have multiple chats
-// Each ChatState stores one message between the two participants in the chat. The backchain of ChatStates
-// represents the history of the chat.
+// DigitalEvidenceState merepresentasikan data yang disimpan di Ledger.
+// Sebuah laporan bukti digital terdiri dari serangkaian data linear antara dua partisipan atau lebih dan diwakili oleh UUID.
+// Setiap organisasi dapat memiliki beberapa data untuk suatu laporan
+// Setiap DigitalEvidenceState menyimpan satu data bukti digital antara dua partisipan atau lebih dalam suatu laporan. Backchain pada DigitalEvidenceState merepresentasikan riwayat perubahan pada laporan bukti digital.
 
 @BelongsToContract(DigitalEvidenceContract::class)
 data class DigitalEvidenceState(
@@ -40,7 +37,7 @@ data class DigitalEvidenceState(
     // orang yang memiliki bukti digital (MemberX500Name)
     val holderEvidence: MemberX500Name,
     // Reference state laporan analisis
-    val labReport: List<StateRef>,
+    val labReport: List<UUID>,
     // History interaksi pada CoC
     val custodyHistory: List<CustodyInteraction>,
     // The participants to the chat, represented by their public key.
@@ -49,7 +46,7 @@ data class DigitalEvidenceState(
         return participants
     }
 
-    // Helper function to create a new DigitalEvidenceState from the previous (input) DigitalEvidenceState.
+    // Helper function untuk memperbarui isi state.
     fun updateDigitalEvidence(registerNumber: String,
                               typeDE: String, modelDE: String, manufacturerDE: String,
                               serialNumber: String, seizureReason: String, caseID: String,
@@ -59,12 +56,12 @@ data class DigitalEvidenceState(
             serialNumber = serialNumber, seizureReason = seizureReason, caseID = caseID,
             custodyHistory = custodyHistory)
 
-    fun transferDigitalEvidence(holderEvidence: MemberX500Name, custodyHistory: List<CustodyInteraction>, participants: List<PublicKey>) =
-        copy(holderEvidence = holderEvidence, custodyHistory = custodyHistory, participants = participants)
+    // Helper function untuk memindahkan nama holder
+    fun transferDigitalEvidence(holderEvidence: MemberX500Name, custodyHistory: List<CustodyInteraction>) =
+        copy(holderEvidence = holderEvidence, custodyHistory = custodyHistory)
 
-    fun addLabReportToEvidence(refs: List<StateRef>, custodyHistory: List<CustodyInteraction>) =
-        copy(labReport = refs, custodyHistory = custodyHistory)
-//    fun AddAnalysisReport2DigitalEvidence(labReport: List<AnalysisReportState>) =
-//        copy(labReport = labReport)
+    // Helper function untuk menambahkan reference state dari laporan hasil analisis suatu bukti digital
+    fun addLabReportToEvidence(labReport: List<UUID>, custodyHistory: List<CustodyInteraction>) =
+        copy(labReport = labReport, custodyHistory = custodyHistory)
 }
 

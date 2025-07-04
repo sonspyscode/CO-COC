@@ -1,3 +1,12 @@
+/*
+RequestBody for triggering the flow via REST:
+{
+    "clientRequestId": "GetCustody-1",
+    "flowClassName": "com.r3.developers.chainofcustody.support.GetCustodyLogInteractionFlow",
+    "requestBody": {}
+}
+*/
+
 package com.r3.developers.chainofcustody.support
 
 import com.r3.developers.chainofcustody.states.DigitalEvidenceState

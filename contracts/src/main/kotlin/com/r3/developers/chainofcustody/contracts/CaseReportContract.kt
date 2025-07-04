@@ -53,6 +53,20 @@ class CaseReportContract: Contract {
 
         const val VALIDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update there should be one and only one input state."
         const val VALIDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is Validate there should be one and only one output state."
+        const val VALIDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer id must not change."
+        const val VALIDATE_COMMAND_CASENUM_SHOULD_NOT_CHANGE = "When command is Transfer Case Number must not change."
+        const val VALIDATE_COMMAND_CASENAME_SHOULD_NOT_CHANGE = "When command is Transfer Case Name must not change."
+        const val VALIDATE_COMMAND_SUSNAME_SHOULD_NOT_CHANGE = "When command is Transfer Suspect Name must not change."
+        const val VALIDATE_COMMAND_VICNAME_SHOULD_NOT_CHANGE = "When command is Transfer Victim Name must not change."
+        const val VALIDATE_COMMAND_TIME_SHOULD_NOT_CHANGE = "When command is Transfer Date and Time must not change."
+        const val VALIDATE_COMMAND_TOOLNAME_SHOULD_NOT_CHANGE = "When command is Transfer Tool Name must not change."
+        const val VALIDATE_COMMAND_TOOLDESC_SHOULD_NOT_CHANGE = "When command is Transfer Tool Description must not change."
+        const val VALIDATE_COMMAND_FR_SHOULD_NOT_CHANGE = "When command is Update First Responder must not change."
+        const val VALIDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE = "When command is Update First Responder's Organisation must not change."
+        const val VALIDATE_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE = "When command is Transfer Status Case must not change."
+        const val VALIDATE_COMMAND_VALIDATE_SHOULD_NOT_CHANGE = "When command is Transfer Validation Status must not change."
+        const val VALIDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE = "When command is Update Digital Evidence Pack must not change."
+        const val VALIDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer participants must not change."
         const val VALIDATE_COMMAND_JUST_FOR_ORG3 = "Only Organisation 3 can validate the report."
         const val VALIDATE_COMMAND_VALIDATE_SHOULD_BE_CHANGE = "When command is Validate, Validation Status of digital evidence should be different between input and output."
 
@@ -117,8 +131,7 @@ class CaseReportContract: Contract {
                 UPDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE using (input.organisationName == output.organisationName)
                 UPDATE_COMMAND_HOLDER_SHOULD_NOT_CHANGE using (input.holderCaseReport == output.holderCaseReport)
                 UPDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE using (input.digitalEvidencePack == output.digitalEvidencePack)
-                UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (
-                        input.participants.toSet().intersect(output.participants.toSet()).size >= 2)
+                UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (input.participants == output.participants)
             }
             is Transfer -> {
                 TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE using (transaction.inputContractStates.size == 1)
@@ -139,9 +152,9 @@ class CaseReportContract: Contract {
                 TRANSFER_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE using (input.statusCase == output.statusCase)
                 TRANSFER_COMMAND_VALIDATE_SHOULD_NOT_CHANGE using (input.validationStatus == output.validationStatus)
                 TRANSFER_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE using (input.digitalEvidencePack == output.digitalEvidencePack)
-                TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (
-                        input.participants.toSet().intersect(output.participants.toSet()).size >= 2)
-                TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY using (input.holderCaseReport == output.holderCaseReport)
+                TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (input.participants == output.participants)
+                val allowedOrgs = listOf("Org1", "Org3")
+                TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY using (allowedOrgs.contains(input.holderCaseReport.organization))
                 TRANSFER_COMMAND_SHOULD_BE_CHANGE_HOLDER using (input.holderCaseReport != output.holderCaseReport)
 
             }
@@ -151,6 +164,21 @@ class CaseReportContract: Contract {
 
                 val input = transaction.inputContractStates.single() as CaseReportState
                 val output = transaction.outputContractStates.single() as CaseReportState
+                VALIDATE_COMMAND_ID_SHOULD_NOT_CHANGE using (input.idCase == output.idCase)
+                VALIDATE_COMMAND_CASENUM_SHOULD_NOT_CHANGE using (input.caseNumber == output.caseNumber)
+                VALIDATE_COMMAND_CASENAME_SHOULD_NOT_CHANGE using (input.caseName == output.caseName)
+                VALIDATE_COMMAND_SUSNAME_SHOULD_NOT_CHANGE using (input.suspectName == output.suspectName)
+                VALIDATE_COMMAND_VICNAME_SHOULD_NOT_CHANGE using (input.victimName == output.victimName)
+                VALIDATE_COMMAND_TIME_SHOULD_NOT_CHANGE using (input.dateNtime == output.dateNtime)
+                VALIDATE_COMMAND_TOOLNAME_SHOULD_NOT_CHANGE using (input.toolName == output.toolName)
+                VALIDATE_COMMAND_TOOLDESC_SHOULD_NOT_CHANGE using (input.toolsDesc == output.toolsDesc)
+                VALIDATE_COMMAND_FR_SHOULD_NOT_CHANGE using (input.firstResponder == output.firstResponder)
+                VALIDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE using (input.organisationName == output.organisationName)
+                VALIDATE_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE using (input.statusCase == output.statusCase)
+                VALIDATE_COMMAND_VALIDATE_SHOULD_NOT_CHANGE using (input.validationStatus == output.validationStatus)
+                VALIDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE using (input.digitalEvidencePack == output.digitalEvidencePack)
+                VALIDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (input.participants == output.participants)
+
                 VALIDATE_COMMAND_JUST_FOR_ORG3 using (input.holderCaseReport.organization == "Org3")
                 VALIDATE_COMMAND_VALIDATE_SHOULD_BE_CHANGE using (input.validationStatus != output.validationStatus)
             }

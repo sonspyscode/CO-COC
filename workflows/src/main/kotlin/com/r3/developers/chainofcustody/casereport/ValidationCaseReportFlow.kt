@@ -70,24 +70,36 @@ class ValidationCaseReportFlow: ClientStartableFlow {
 
             // Get MemberInfos for the Vnode running the flow and the otherMember.
             val myInfo = memberLookup.myInfo()
+
             val state = stateAndRef.state.contractState
+            val participantsKey = state.participants
+            val allMembers = participantsKey.map { key ->
+                memberLookup.lookup(key)
+                    ?: throw CordaRuntimeException ("Member not found from public key: $key")
+            }
 
-            val members = state.participants.map {
-                memberLookup.lookup(it) ?: throw CordaRuntimeException("Member not found from public key $it.")}
-            val otherMember = (members - myInfo).singleOrNull()
-                ?: throw CordaRuntimeException("Should be only one participant other than the initiator.")
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+            val allowedCommonName = listOf("Validator", "LawOfficer")
+            val allowedOrgs = listOf("Org3", "Org4")
 
-            val custodyTracker = CustodyInteraction (
+            // Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.commonName !in allowedCommonName && myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Analysis Report.")
+            }
+
+            val otherMembers = allMembers.filter { it.name != myInfo.name }
+            val parties = otherMembers.map { it.name }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Case-Report",
                 officerName = myInfo.name,
                 interaction = "VALIDATE",
                 timestamp = Instant.now()
             )
 
-            val updateTracker = listOf(custodyTracker)
-
             // Create a new ChatState using the updateMessage helper function.
-            val newCaseReportState = state.validationCaseReport(validationStatus = flowArgs.validationStatus, custodyHistory = updateTracker)
+            val newCaseReportState = state.validationCaseReport(
+                validationStatus = flowArgs.validationStatus, custodyHistory = state.custodyHistory + custodyInteraction)
 
             // Use UTXOTransactionBuilder to build up the draft transaction.
             val txBuilder= ledgerService.createTransactionBuilder()
@@ -106,7 +118,7 @@ class ValidationCaseReportFlow: ClientStartableFlow {
             // Call FinalizeChatSubFlow which will finalise the transaction.
             // If successful the flow will return a String of the created transaction id,
             // if not successful it will return an error message.
-            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, otherMember.name))
+            return flowEngine.subFlow(FinalizeCaseReportSubFlow(signedTransaction, parties))
 
 
         }

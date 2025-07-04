@@ -43,8 +43,10 @@ class DigitalEvidenceContract: Contract {
         const val TRANSFER_COMMAND_CASEID_SHOULD_NOT_CHANGE = "When command is Transfer Case Identifier must not change."
         const val TRANSFER_COMMAND_LAB_SHOULD_NOT_CHANGE = "When command is Transfer Lab Report must not change."
         const val TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer participants must not change."
-        const val TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Transfer, only holder of digital evidence can do it."
+//        const val TRANSFER_COMMAND_JUST_FOR_ORG1 = "When command is Transfer, only org1 can do it."
         const val TRANSFER_COMMAND_SHOULD_BE_CHANGE_HOLDER = "When command is Transfer, holder of digital evidence should be different between input and output."
+        const val TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Transfer, holder of digital evidence should be from org1, org2, and org3."
+
 
         const val ADDLABREPORT_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Transfer there should be one and only one input state."
         const val ADDLABREPORT_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Transfer there should be one and only one output state."
@@ -124,6 +126,10 @@ class DigitalEvidenceContract: Contract {
             is Transfer -> {
                 TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE using (transaction.inputContractStates.size == 1)
                 TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE using (transaction.outputContractStates.size == 1)
+//                TRANSFER_COMMAND_JUST_FOR_ORG1 using {
+//                    val output = transaction.outputContractStates.single() as DigitalEvidenceState
+//                    output.holderEvidence.organization == "Org1"
+//                }
 
                 val input = transaction.inputContractStates.single() as DigitalEvidenceState
                 val output = transaction.outputContractStates.single() as DigitalEvidenceState
@@ -137,12 +143,9 @@ class DigitalEvidenceContract: Contract {
                 TRANSFER_COMMAND_REASON_SHOULD_NOT_CHANGE using (input.seizureReason == output.seizureReason)
                 TRANSFER_COMMAND_CASEID_SHOULD_NOT_CHANGE using (input.caseID == output.caseID)
                 TRANSFER_COMMAND_LAB_SHOULD_NOT_CHANGE using (input.labReport == output.labReport)
-                TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (
-                        input.participants.toSet().intersect(output.participants.toSet()).size >= 2)
-                TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY using {
-                    val input = transaction.inputContractStates.single() as DigitalEvidenceState
-                    input.holderEvidence.organization == "Org1, Org2, Org3"
-                }
+                val allowedOrgs = listOf("Org1", "Org2", "Org3")
+                TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY using (allowedOrgs.contains(input.holderEvidence.organization))
+                TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (input.participants == output.participants)
                 TRANSFER_COMMAND_SHOULD_BE_CHANGE_HOLDER using (input.holderEvidence != output.holderEvidence)
             }
             is AddLabReport -> {

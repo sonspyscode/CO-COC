@@ -2,19 +2,18 @@
 Example of RequestBody for triggering the flow via REST:
 
 {
-  "clientRequestId": "createDE-01",
+  "clientRequestId": "createAR-07",
     "flowClassName": "com.r3.developers.chainofcustody.analysisreport.CreateAnalysisReportFlow",
     "requestBody": {
-        "idEvidence":"content identifier",
-        "cidDE":"DE-01821398",
-        "fileName":"flashdisk",
-        "fileSize":"flashdisk",
-        "hashSHA1":"lite",
-        "hashMD5":"Sundis",
-        "sourceFile":"Sundis-01821379823",
-        "fileLocation":"file yang berisi informasi yang diduga berita hoax",
-        "potentialInfo":"CC-001",
-        "holderAnalysisReport":"pak rudi"
+        "idEvidence":"content identifier 1",
+        "cidDE":"CID-01821398",
+        "fileName":"propaganda.jpeg",
+        "fileSize":"10000",
+        "hashSHA1":"hash value SHA1",
+        "hashMD5":"hash value MD5",
+        "sourceFile":"D://Bahan/PropagandaInternet/",
+        "fileLocation":"C://HOMEUSER/AnalysisResult/",
+        "potentialInfo":"Metadata file menunjukkan file tersebut hasil suntingan dan tidak asli",
         "otherMember":"CN=Custodian, OU=CrimeInvestigationTeam, O=Org1, L=Makassar, C=ID"
    }
 }
@@ -34,17 +33,17 @@ import net.corda.v5.base.types.MemberX500Name
 import net.corda.v5.ledger.common.NotaryLookup
 import net.corda.v5.ledger.utxo.UtxoLedgerService
 import org.slf4j.LoggerFactory
+import java.security.PublicKey
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
 
 // A class to hold the deserialized arguments required to start the flow.
 // Kelas untuk menampung argumen deserialisasi yang diperlukan untuk memulai aliran.
 data class CreateAnalysisReportFlowArgs(val idEvidence: String, val cidDE: String, val fileName: String,
-                                        val fileSize: Long, val hashSHA1: String,
-                                        val hashMD5: String, val sourceFile: String,
-                                        val fileLocation: String, val potentialInfo: String,
-                                        val holderAnalysisReport: MemberX500Name, val otherMember: String)
+                                            val fileSize: Long, val hashSHA1: String,
+                                                val hashMD5: String, val sourceFile: String,
+                                                    val fileLocation: String, val potentialInfo: String,
+                                                        val otherMember: List<String>)
 
 
 // See Chat CorDapp Design section of the getting started docs for a description of this flow.
@@ -93,24 +92,39 @@ class CreateAnalysisReportFlow: ClientStartableFlow {
             // Catatan, di Java CorDapps hanya RuntimeExceptions yang tidak dicentang yang bisa dilempar, bukan
             // pengecualian yang dicentang karena ini mengubah tanda tangan metode dan merusak override.
             val myInfo = memberLookup.myInfo()
-            val otherMember = memberLookup.lookup(MemberX500Name.parse(flowArgs.otherMember)) ?:
-            throw CordaRuntimeException("MemberLookup can't find otherMember specified in flow arguments.")
 
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+//            val allowedCommonName = "Investigator"
+            val allowedOrgs = listOf("Org2", "Org4")
 
-            val custodyTracker = CustodyInteraction (
+            // Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Analysis Report.")
+            }
+
+            val otherMembers = flowArgs.otherMember.map { memberString ->
+                memberLookup.lookup(MemberX500Name.parse(memberString)) ?:
+                throw CordaRuntimeException("Can't find otherMember $memberString  in flow arguments.")
+            }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Analysis-report",
                 officerName = myInfo.name,
                 interaction = "CREATE analysis report for ${flowArgs.idEvidence} by ${myInfo.name}",
                 timestamp = Instant.now()
             )
 
-            val updateTracker = listOf(custodyTracker)
+            val allParticipants: List<PublicKey> = listOf(myInfo.ledgerKeys.first()) + otherMembers.map { it.ledgerKeys.first() }
+
+            val partyMembers = otherMembers
+            val parties = partyMembers.map { it.name }
+
 
             // Create the ChatState from the input arguments and member information.
             //Buat ChatState dari argumen masukan dan informasi anggota.
             val newAnalysisReportState = AnalysisReportState(
                 idEvidence = flowArgs.idEvidence,
-                cidDE = flowArgs.cidDE, //harusnya reference state
+                cidDE = flowArgs.cidDE,
                 fileName = flowArgs.fileName,
                 fileSize = flowArgs.fileSize,
                 hashSHA1 = flowArgs.hashSHA1,
@@ -118,9 +132,9 @@ class CreateAnalysisReportFlow: ClientStartableFlow {
                 sourceFile = flowArgs.sourceFile,
                 fileLocation = flowArgs.fileLocation,
                 potentialInfo = flowArgs.potentialInfo,
-                holderAnalysisReport = flowArgs.holderAnalysisReport,
-                custodyHistory = updateTracker,
-                participants = listOf(myInfo.ledgerKeys.first(), otherMember.ledgerKeys.first())
+                holderAnalysisReport = myInfo.name,
+                custodyHistory = listOf(custodyInteraction),
+                participants = allParticipants
             )
 
             // Obtain the notary.
@@ -150,7 +164,7 @@ class CreateAnalysisReportFlow: ClientStartableFlow {
             // Panggil FinalizeDigitalEvidenceSubFlow yang akan menyelesaikan transaksi.
             // Jika berhasil, alur akan mengembalikan sebuah String dari id transaksi yang dibuat,
             // jika tidak berhasil, alur akan mengembalikan pesan kesalahan.
-            return flowEngine.subFlow(FinalizeAnalysisReportSubFlow(signedTransaction, otherMember.name))
+            return flowEngine.subFlow(FinalizeAnalysisReportSubFlow(signedTransaction, parties))
 
 
         }

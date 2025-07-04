@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 // @InitiatingFlow declares the protocol which will be used to link the initiator to the responder.
 // @InitiatingFlow mendeklarasikan protokol yang akan digunakan untuk menghubungkan inisiator ke responder.
 @InitiatingFlow(protocol = "finalize-analysisreport-protocol")
-class FinalizeAnalysisReportSubFlow(private val signedTransaction: UtxoSignedTransaction, private val otherMember: MemberX500Name): SubFlow<String> {
+class FinalizeAnalysisReportSubFlow(private val signedTransaction: UtxoSignedTransaction, private val parties: List<MemberX500Name>): SubFlow<String> {
 
     private companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)
@@ -37,7 +37,7 @@ class FinalizeAnalysisReportSubFlow(private val signedTransaction: UtxoSignedTra
 
         // Initiates a session with the other Member.
         // Memulai sesi dengan Anggota lain.
-        val session = flowMessaging.initiateFlow(otherMember)
+        val session = parties.map { flowMessaging.initiateFlow(it) }
 
         return try {
             // Calls the Corda provided finalise() function which gather signatures from the counterparty,
@@ -48,7 +48,7 @@ class FinalizeAnalysisReportSubFlow(private val signedTransaction: UtxoSignedTra
             // Jika berhasil, kembalikan id dari transaksi yang dibuat. (Ini berbeda dengan id ChatState)
             val finalizedSignedTransaction = ledgerService.finalize(
                 signedTransaction,
-                listOf(session)
+                session
             )
             // Returns the transaction id converted to a string.
             // Mengembalikan id transaksi yang dikonversi menjadi sebuah string.

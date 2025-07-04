@@ -21,7 +21,6 @@ Example of RequestBody for triggering the flow via REST:
 package com.r3.developers.chainofcustody.digitalevidence
 
 import com.r3.developers.chainofcustody.contracts.DigitalEvidenceContract
-import com.r3.developers.chainofcustody.states.AnalysisReportState
 import com.r3.developers.chainofcustody.states.CustodyInteraction
 import com.r3.developers.chainofcustody.states.DigitalEvidenceState
 import net.corda.v5.application.flows.*
@@ -33,17 +32,18 @@ import net.corda.v5.base.types.MemberX500Name
 import net.corda.v5.ledger.common.NotaryLookup
 import net.corda.v5.ledger.utxo.UtxoLedgerService
 import org.slf4j.LoggerFactory
+import java.security.PublicKey
 import java.time.Duration
 import java.time.Instant
-import kotlin.collections.toList
+import kotlin.collections.map
 
 // A class to hold the deserialized arguments required to start the flow.
 // Kelas untuk menampung argumen deserialisasi yang diperlukan untuk memulai aliran.
 data class CreateDigitalEvidenceFlowArgs(val cid: String, val registerNumber: String,
-                                        val typeDE: String, val modelDE: String,
-                                        val manufacturerDE: String, val serialNumber: String,
-                                         val seizureReason: String,
-                                        val caseID: String, val otherMember: String)
+                                            val typeDE: String, val modelDE: String,
+                                                val manufacturerDE: String, val serialNumber: String,
+                                                    val seizureReason: String,
+                                                        val caseID: String, val otherMember: List<String>)
 
 
 // See Chat CorDapp Design section of the getting started docs for a description of this flow.
@@ -92,24 +92,32 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
             // Catatan, di Java CorDapps hanya RuntimeExceptions yang tidak dicentang yang bisa dilempar, bukan
             // pengecualian yang dicentang karena ini mengubah tanda tangan metode dan merusak override.
             val myInfo = memberLookup.myInfo()
-            val otherMember = memberLookup.lookup(MemberX500Name.parse(flowArgs.otherMember)) ?:
-            throw CordaRuntimeException("MemberLookup can't find otherMember specified in flow arguments.")
 
-            val evidenceAnalysisReport = ledgerService.findUnconsumedStatesByExactType(AnalysisReportState::class.java,
-                100,
-                Instant.MAX).results.toList()
-            val relatedAnalysisReport = evidenceAnalysisReport.filter{it.state.contractState.cidDE == flowArgs.cid}.map{it.ref}
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+            val allowedCommonName = "Investigator"
+            val allowedOrgs = listOf("Org1", "Org3")
 
+            // Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to add Evidence Pack in Case Report.")
+            }
 
+            val otherMembers = flowArgs.otherMember.map { memberString ->
+                memberLookup.lookup(MemberX500Name.parse(memberString)) ?:
+                throw CordaRuntimeException("Can't find otherMember $memberString  in flow arguments.")
+            }
 
-            val custodyTracker = CustodyInteraction (
+            val allParticipants: List<PublicKey> = listOf(myInfo.ledgerKeys.first()) + otherMembers.map { it.ledgerKeys.first() }
+
+            val partyMembers = otherMembers
+            val parties = partyMembers.map { it.name }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Evidence-Report",
                 officerName = myInfo.name,
                 interaction = "CREATE evidence report from case ${flowArgs.caseID}",
                 timestamp = Instant.now()
             )
-
-            val updateTracker = listOf(custodyTracker)
 
             // Create the ChatState from the input arguments and member information.
             //Buat ChatState dari argumen masukan dan informasi anggota.
@@ -123,9 +131,9 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
                 seizureReason = flowArgs.seizureReason,
                 holderEvidence = myInfo.name,
                 caseID = flowArgs.caseID,
-                labReport = relatedAnalysisReport,
-                custodyHistory = updateTracker,
-                participants = listOf(myInfo.ledgerKeys.first(), otherMember.ledgerKeys.first())
+                labReport = listOf(),
+                custodyHistory = listOf(custodyInteraction),
+                participants = allParticipants
             )
 
             // Obtain the notary.
@@ -155,7 +163,7 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
             // Panggil FinalizeDigitalEvidenceSubFlow yang akan menyelesaikan transaksi.
             // Jika berhasil, alur akan mengembalikan sebuah String dari id transaksi yang dibuat,
             // jika tidak berhasil, alur akan mengembalikan pesan kesalahan.
-            return flowEngine.subFlow(FinalizeDigitalEvidenceSubFlow(signedTransaction, otherMember.name))
+            return flowEngine.subFlow(FinalizeDigitalEvidenceSubFlow(signedTransaction, parties))
 
 
         }

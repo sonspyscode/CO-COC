@@ -1,17 +1,17 @@
 /*
 RequestBody for triggering the flow via REST:
 {
-  "clientRequestId": "createDE-01",
-    "flowClassName": "com.r3.developers.chainofcustody.analysisreport.UpdateAnalysisReport",
+  "clientRequestId": "updateAR-01",
+    "flowClassName": "com.r3.developers.chainofcustody.analysisreport.UpdateAnalysisReportFlow",
     "requestBody": {
-        "idReport":"identifier suatu laporan"
-        "fileName":"DE-01821398",
-        "fileSize":"flashdisk",
-        "hashSHA1":"lite",
-        "hashMD5":"Sundis",
-        "sourceFile":"Sundis-01821379823",
-        "fileLocation":"file yang berisi informasi yang diduga berita hoax",
-        "potentialInfo":"CC-001""
+        "idReport": "fe09fe1f-f5ab-48a7-958b-b8c9b69e436b",
+        "fileName": "adudomba.jpg",
+        "fileSize": "10000",
+        "hashSHA1": "hash value SHA1",
+        "hashMD5": "hash value MD5",
+        "sourceFile": "D://Bahan/PropagandaInternet/",
+        "fileLocation": "C://HOMEUSER/AnalysisResult/",
+        "potentialInfo": "Exif Metadata file menunjukkan file tersebut hasil suntingan dan tidak asli"
    }
 }
  */
@@ -81,25 +81,36 @@ class UpdateAnalysisReportFlow: ClientStartableFlow {
             // Get MemberInfos for the Vnode running the flow and the otherMember.
             val myInfo = memberLookup.myInfo()
             val state = stateAndRef.state.contractState
+            val participantsKey = state.participants
+            val allMembers = participantsKey.map { key ->
+                memberLookup.lookup(key) ?: throw CordaRuntimeException("Member not found from public key: $key")
+            }
 
-            val members = state.participants.map {
-                memberLookup.lookup(it) ?: throw CordaRuntimeException("Member not found from public key $it.")}
-            val otherMember = (members - myInfo).singleOrNull()
-                ?: throw CordaRuntimeException("Should be only one participant other than the initiator.")
+            // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
+//            val allowedCommonName = "Investigator"
+            val allowedOrgs = listOf("Org2", "Org4")
 
-            val custodyTracker = CustodyInteraction (
+// Validasi hanya role dan organisasi tertentu yang diizinkan
+            if (myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to update Analysis Report.")
+            }
+
+            val otherMembers = allMembers.filter { it.name != myInfo.name }
+            val parties = otherMembers.map { it.name }
+
+            val custodyInteraction = CustodyInteraction (
                 typeReport = "Analysis-Report",
                 officerName = myInfo.name,
                 interaction = "UPDATE analysis report by ${myInfo.name}",
                 timestamp = Instant.now()
             )
 
-            val updateTracker = listOf(custodyTracker)
-
             // Create a new ChatState using the updateMessage helper function.
             val newAnalysisReportState = state.updateAnalysisReport(fileName= flowArgs.fileName, fileSize= flowArgs.fileSize,
-                hashSHA1 = flowArgs.hashSHA1, hashMD5 = flowArgs.hashMD5, sourceFile = flowArgs.sourceFile,
-                fileLocation = flowArgs.fileLocation, potentialInfo = flowArgs.potentialInfo, custodyHistory = updateTracker)
+                hashSHA1 = flowArgs.hashSHA1, hashMD5 = flowArgs.hashMD5,
+                sourceFile = flowArgs.sourceFile, fileLocation = flowArgs.fileLocation,
+                potentialInfo = flowArgs.potentialInfo,
+                custodyHistory = state.custodyHistory + custodyInteraction)
 
             // Use UTXOTransactionBuilder to build up the draft transaction.
             val txBuilder= ledgerService.createTransactionBuilder()
@@ -118,7 +129,7 @@ class UpdateAnalysisReportFlow: ClientStartableFlow {
             // Call FinalizeChatSubFlow which will finalise the transaction.
             // If successful the flow will return a String of the created transaction id,
             // if not successful it will return an error message.
-            return flowEngine.subFlow(FinalizeAnalysisReportSubFlow(signedTransaction, otherMember.name))
+            return flowEngine.subFlow(FinalizeAnalysisReportSubFlow(signedTransaction, parties))
 
 
         }
