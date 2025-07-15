@@ -3,7 +3,10 @@ RequestBody for triggering the flow via REST:
 {
     "clientRequestId": "GetCustody-1",
     "flowClassName": "com.r3.developers.chainofcustody.support.GetCustodyLogInteractionFlow",
-    "requestBody": {}
+    "requestBody": {
+        "typeReport": "Case-Report",
+        "id": "identifier"
+    }
 }
 */
 

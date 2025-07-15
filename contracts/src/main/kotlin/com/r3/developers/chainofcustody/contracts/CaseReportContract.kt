@@ -23,56 +23,55 @@ class CaseReportContract: Contract {
 
         const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update there should be one and only one input state."
         const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Update there should be one and only one output state."
-        const val UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Update id must not change."
-        const val UPDATE_COMMAND_CASENUM_SHOULD_NOT_CHANGE = "When command is Update CID must not change."
-        const val UPDATE_COMMAND_FR_SHOULD_NOT_CHANGE = "When command is Update First Responder must not change."
-        const val UPDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE = "When command is Update First Responder's Organisation must not change."
-        const val UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Update participants must not change."
-        const val UPDATE_COMMAND_HOLDER_SHOULD_NOT_CHANGE = "When command is Update Holder case must not change."
-        const val UPDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE = "When command is Update Digital Evidence Pack must not change."
-        const val UPDATE_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Update, only holder of digital evidence can do it."
+        const val UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Update, id must not change."
+        const val UPDATE_COMMAND_CASENUM_SHOULD_NOT_CHANGE = "When command is Update, CID must not change."
+        const val UPDATE_COMMAND_FR_SHOULD_NOT_CHANGE = "When command is Update, First Responder must not change."
+        const val UPDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE = "When command is Update, First Responder's Organisation must not change."
+        const val UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Update, participants must not change."
+        const val UPDATE_COMMAND_HOLDER_SHOULD_NOT_CHANGE = "When command is Update, Holder case must not change."
+        const val UPDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE = "When command is Update, Digital Evidence Pack must not change."
+        const val UPDATE_COMMAND_JUST_FOR_HOLDER_ONLY = "Only holder can update this evidence report."
 
-        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Transfer there should be one and only one input state."
-        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Transfer there should be one and only one output state."
-        const val TRANSFER_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer id must not change."
-        const val TRANSFER_COMMAND_CASENUM_SHOULD_NOT_CHANGE = "When command is Transfer Case Number must not change."
-        const val TRANSFER_COMMAND_CASENAME_SHOULD_NOT_CHANGE = "When command is Transfer Case Name must not change."
-        const val TRANSFER_COMMAND_SUSNAME_SHOULD_NOT_CHANGE = "When command is Transfer Suspect Name must not change."
-        const val TRANSFER_COMMAND_VICNAME_SHOULD_NOT_CHANGE = "When command is Transfer Victim Name must not change."
-        const val TRANSFER_COMMAND_TIME_SHOULD_NOT_CHANGE = "When command is Transfer Date and Time must not change."
-        const val TRANSFER_COMMAND_TOOLNAME_SHOULD_NOT_CHANGE = "When command is Transfer Tool Name must not change."
-        const val TRANSFER_COMMAND_TOOLDESC_SHOULD_NOT_CHANGE = "When command is Transfer Tool Description must not change."
-        const val TRANSFER_COMMAND_FR_SHOULD_NOT_CHANGE = "When command is Update First Responder must not change."
-        const val TRANSFER_COMMAND_FRORG_SHOULD_NOT_CHANGE = "When command is Update First Responder's Organisation must not change."
-        const val TRANSFER_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE = "When command is Transfer Status Case must not change."
-        const val TRANSFER_COMMAND_VALIDATE_SHOULD_NOT_CHANGE = "When command is Transfer Validation Status must not change."
-        const val TRANSFER_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE = "When command is Update Digital Evidence Pack must not change."
-        const val TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer participants must not change."
+        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Transfer, there should be one and only one input state."
+        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Transfer, there should be one and only one output state."
+        const val TRANSFER_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer, id must not change."
+        const val TRANSFER_COMMAND_CASENUM_SHOULD_NOT_CHANGE = "When command is Transfer, Case Number must not change."
+        const val TRANSFER_COMMAND_CASENAME_SHOULD_NOT_CHANGE = "When command is Transfer, Case Name must not change."
+        const val TRANSFER_COMMAND_SUSNAME_SHOULD_NOT_CHANGE = "When command is Transfer, Suspect Name must not change."
+        const val TRANSFER_COMMAND_VICNAME_SHOULD_NOT_CHANGE = "When command is Transfer, Victim Name must not change."
+        const val TRANSFER_COMMAND_TIME_SHOULD_NOT_CHANGE = "When command is Transfer, Date and Time must not change."
+        const val TRANSFER_COMMAND_TOOLNAME_SHOULD_NOT_CHANGE = "When command is Transfer, Tool Name must not change."
+        const val TRANSFER_COMMAND_TOOLDESC_SHOULD_NOT_CHANGE = "When command is Transfer, Tool Description must not change."
+        const val TRANSFER_COMMAND_FR_SHOULD_NOT_CHANGE = "When command is Update, First Responder must not change."
+        const val TRANSFER_COMMAND_FRORG_SHOULD_NOT_CHANGE = "When command is Update, First Responder's Organisation must not change."
+        const val TRANSFER_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE = "When command is Transfer, Status Case must not change."
+        const val TRANSFER_COMMAND_VALIDATE_SHOULD_NOT_CHANGE = "When command is Transfer, Validation Status must not change."
+        const val TRANSFER_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE = "When command is Update, Digital Evidence Pack must not change."
+        const val TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer, participants must not change."
         const val TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Transfer, only holder of digital evidence can do it."
         const val TRANSFER_COMMAND_SHOULD_BE_CHANGE_HOLDER = "When command is Transfer, holder of digital evidence should be different between input and output."
 
-        const val VALIDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update there should be one and only one input state."
-        const val VALIDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is Validate there should be one and only one output state."
-        const val VALIDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer id must not change."
-        const val VALIDATE_COMMAND_CASENUM_SHOULD_NOT_CHANGE = "When command is Transfer Case Number must not change."
-        const val VALIDATE_COMMAND_CASENAME_SHOULD_NOT_CHANGE = "When command is Transfer Case Name must not change."
-        const val VALIDATE_COMMAND_SUSNAME_SHOULD_NOT_CHANGE = "When command is Transfer Suspect Name must not change."
-        const val VALIDATE_COMMAND_VICNAME_SHOULD_NOT_CHANGE = "When command is Transfer Victim Name must not change."
-        const val VALIDATE_COMMAND_TIME_SHOULD_NOT_CHANGE = "When command is Transfer Date and Time must not change."
-        const val VALIDATE_COMMAND_TOOLNAME_SHOULD_NOT_CHANGE = "When command is Transfer Tool Name must not change."
-        const val VALIDATE_COMMAND_TOOLDESC_SHOULD_NOT_CHANGE = "When command is Transfer Tool Description must not change."
-        const val VALIDATE_COMMAND_FR_SHOULD_NOT_CHANGE = "When command is Update First Responder must not change."
-        const val VALIDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE = "When command is Update First Responder's Organisation must not change."
-        const val VALIDATE_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE = "When command is Transfer Status Case must not change."
-        const val VALIDATE_COMMAND_VALIDATE_SHOULD_NOT_CHANGE = "When command is Transfer Validation Status must not change."
-        const val VALIDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE = "When command is Update Digital Evidence Pack must not change."
-        const val VALIDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer participants must not change."
+        const val VALIDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update, there should be one and only one input state."
+        const val VALIDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is Validate, there should be one and only one output state."
+        const val VALIDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer, id must not change."
+        const val VALIDATE_COMMAND_CASENUM_SHOULD_NOT_CHANGE = "When command is Transfer, Case Number must not change."
+        const val VALIDATE_COMMAND_CASENAME_SHOULD_NOT_CHANGE = "When command is Transfer, Case Name must not change."
+        const val VALIDATE_COMMAND_SUSNAME_SHOULD_NOT_CHANGE = "When command is Transfer, Suspect Name must not change."
+        const val VALIDATE_COMMAND_VICNAME_SHOULD_NOT_CHANGE = "When command is Transfer, Victim Name must not change."
+        const val VALIDATE_COMMAND_TIME_SHOULD_NOT_CHANGE = "When command is Transfer, Date and Time must not change."
+        const val VALIDATE_COMMAND_TOOLNAME_SHOULD_NOT_CHANGE = "When command is Transfer, Tool Name must not change."
+        const val VALIDATE_COMMAND_TOOLDESC_SHOULD_NOT_CHANGE = "When command is Transfer, Tool Description must not change."
+        const val VALIDATE_COMMAND_FR_SHOULD_NOT_CHANGE = "When command is Update, First Responder must not change."
+        const val VALIDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE = "When command is Update, First Responder's Organisation must not change."
+        const val VALIDATE_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE = "When command is Transfer, Status Case must not change."
+        const val VALIDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE = "When command is Update, Digital Evidence Pack must not change."
+        const val VALIDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer, participants must not change."
         const val VALIDATE_COMMAND_JUST_FOR_ORG3 = "Only Organisation 3 can validate the report."
         const val VALIDATE_COMMAND_VALIDATE_SHOULD_BE_CHANGE = "When command is Validate, Validation Status of digital evidence should be different between input and output."
 
-        const val ADDEVIDENCEPACK_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Add Evidence Pack there should be one and only one input state."
-        const val ADDEVIDENCEPACK_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Add Evidence Pack there should be one and only one output state."
-        const val ADDEVIDENCEPACK_COMMAND_JUST_FOR_ORG2 = "Only Organisation 2 can validate the report."
+        const val ADDEVIDENCEPACK_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Add Evidence Pack, there should be one and only one input state."
+        const val ADDEVIDENCEPACK_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Add Evidence Pack, there should be one and only one output state."
+        const val ADDEVIDENCEPACK_COMMAND_JUST_FOR_CUSTODIAN = "Only custodian can add evidence to case report."
     }
 
     // Command Class used to indicate that the transaction should start a new chat.
@@ -175,7 +174,6 @@ class CaseReportContract: Contract {
                 VALIDATE_COMMAND_FR_SHOULD_NOT_CHANGE using (input.firstResponder == output.firstResponder)
                 VALIDATE_COMMAND_FRORG_SHOULD_NOT_CHANGE using (input.organisationName == output.organisationName)
                 VALIDATE_COMMAND_STATUSCASE_SHOULD_NOT_CHANGE using (input.statusCase == output.statusCase)
-                VALIDATE_COMMAND_VALIDATE_SHOULD_NOT_CHANGE using (input.validationStatus == output.validationStatus)
                 VALIDATE_COMMAND_EVIDENCEPACK_SHOULD_NOT_CHANGE using (input.digitalEvidencePack == output.digitalEvidencePack)
                 VALIDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (input.participants == output.participants)
 
@@ -189,7 +187,7 @@ class CaseReportContract: Contract {
 
                 val input = transaction.inputContractStates.single() as CaseReportState
 //                val output = transaction.outputContractStates.single() as CaseReportState
-                ADDEVIDENCEPACK_COMMAND_JUST_FOR_ORG2 using (input.holderCaseReport.organization == "Org2")
+                ADDEVIDENCEPACK_COMMAND_JUST_FOR_CUSTODIAN using (input.holderCaseReport.commonName == "Custodian")
             }
 
             else -> {

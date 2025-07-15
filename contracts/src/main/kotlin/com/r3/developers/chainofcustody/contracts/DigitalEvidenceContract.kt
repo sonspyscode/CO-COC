@@ -17,50 +17,50 @@ class DigitalEvidenceContract: Contract {
         const val PARTICIPANTS_MUST_BE_TWO = "Participants must be two"
         const val TRANSACTION_SHOULD_BE_SIGNED_BY_ALL_PARTICIPANTS = "Transaction must be signed by all participants"
 
-        const val CREATE_COMMAND_SHOULD_HAVE_NO_INPUT_STATES = "When command is Create there should be no input states."
-        const val CREATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is Create there should be one and only one output state."
+        const val CREATE_COMMAND_SHOULD_HAVE_NO_INPUT_STATES = "When command is Create, there should be no input states."
+        const val CREATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is Create, there should be one and only one output state."
         const val CREATE_DE_COMMAND_JUST_FOR_INVESTIGATOR = "Only Investigator can create digital evidence documentation"
 
         const val UPDATE_DE_COMMAND_JUST_FOR_ORG1 = "Only member from Organisation 1 can update evidence report"
-        const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update there should be one and only one input state."
-        const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Update there should be one and only one output state."
-        const val UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Update id must not change."
-        const val UPDATE_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Update CID must not change."
-        const val UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Update participants must not change."
+        const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update, there should be one and only one input state."
+        const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Update, there should be one and only one output state."
+        const val UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Update, id must not change."
+        const val UPDATE_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Update, CID must not change."
+        const val UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Update, participants must not change."
         const val UPDATE_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Update, only holder of digital evidence can do it."
-        const val UPDATE_COMMAND_LAB_SHOULD_NOT_CHANGE = "When command is Update Lab Report must not change."
+        const val UPDATE_COMMAND_LAB_SHOULD_NOT_CHANGE = "When command is Update, Lab Report must not change."
 
-        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Transfer there should be one and only one input state."
-        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Transfer there should be one and only one output state."
-        const val TRANSFER_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer id must not change."
-        const val TRANSFER_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Transfer CID must not change."
-        const val TRANSFER_COMMAND_REGNUM_SHOULD_NOT_CHANGE = "When command is Transfer Register Number must not change."
-        const val TRANSFER_COMMAND_TYPE_SHOULD_NOT_CHANGE = "When command is Transfer Type Digital Evidence must not change."
-        const val TRANSFER_COMMAND_MODEL_SHOULD_NOT_CHANGE = "When command is Transfer Model Digital Evidence must not change."
-        const val TRANSFER_COMMAND_MANUFACTURER_SHOULD_NOT_CHANGE = "When command is Transfer Manufacturer Digital Evidence must not change."
-        const val TRANSFER_COMMAND_SERIAL_SHOULD_NOT_CHANGE = "When command is Transfer Serial Number must not change."
-        const val TRANSFER_COMMAND_REASON_SHOULD_NOT_CHANGE = "When command is Transfer Seizure Reason must not change."
-        const val TRANSFER_COMMAND_CASEID_SHOULD_NOT_CHANGE = "When command is Transfer Case Identifier must not change."
-        const val TRANSFER_COMMAND_LAB_SHOULD_NOT_CHANGE = "When command is Transfer Lab Report must not change."
-        const val TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer participants must not change."
+        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Transfer, there should be one and only one input state."
+        const val TRANSFER_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Transfer, there should be one and only one output state."
+        const val TRANSFER_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer, id must not change."
+        const val TRANSFER_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Transfer, CID must not change."
+        const val TRANSFER_COMMAND_REGNUM_SHOULD_NOT_CHANGE = "When command is Transfer, Register Number must not change."
+        const val TRANSFER_COMMAND_TYPE_SHOULD_NOT_CHANGE = "When command is Transfer, Type Digital Evidence must not change."
+        const val TRANSFER_COMMAND_MODEL_SHOULD_NOT_CHANGE = "When command is Transfer, Model Digital Evidence must not change."
+        const val TRANSFER_COMMAND_MANUFACTURER_SHOULD_NOT_CHANGE = "When command is Transfer, Manufacturer Digital Evidence must not change."
+        const val TRANSFER_COMMAND_SERIAL_SHOULD_NOT_CHANGE = "When command is Transfer, Serial Number must not change."
+        const val TRANSFER_COMMAND_REASON_SHOULD_NOT_CHANGE = "When command is Transfer, Seizure Reason must not change."
+        const val TRANSFER_COMMAND_CASEID_SHOULD_NOT_CHANGE = "When command is Transfer, Case Identifier must not change."
+        const val TRANSFER_COMMAND_LAB_SHOULD_NOT_CHANGE = "When command is Transfer, Lab Report must not change."
+        const val TRANSFER_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer, participants must not change."
 //        const val TRANSFER_COMMAND_JUST_FOR_ORG1 = "When command is Transfer, only org1 can do it."
         const val TRANSFER_COMMAND_SHOULD_BE_CHANGE_HOLDER = "When command is Transfer, holder of digital evidence should be different between input and output."
         const val TRANSFER_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Transfer, holder of digital evidence should be from org1, org2, and org3."
 
 
-        const val ADDLABREPORT_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Transfer there should be one and only one input state."
-        const val ADDLABREPORT_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Transfer there should be one and only one output state."
-        const val ADDLABREPORT_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer id must not change."
-        const val ADDLABREPORT_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Transfer CID must not change."
-        const val ADDLABREPORT_COMMAND_REGNUM_SHOULD_NOT_CHANGE = "When command is Transfer Register Number must not change."
-        const val ADDLABREPORT_COMMAND_TYPE_SHOULD_NOT_CHANGE = "When command is Transfer Type Digital Evidence must not change."
-        const val ADDLABREPORT_COMMAND_MODEL_SHOULD_NOT_CHANGE = "When command is Transfer Model Digital Evidence must not change."
-        const val ADDLABREPORT_COMMAND_MANUFACTURER_SHOULD_NOT_CHANGE = "When command is Transfer Manufacturer Digital Evidence must not change."
-        const val ADDLABREPORT_COMMAND_SERIAL_SHOULD_NOT_CHANGE = "When command is Transfer Serial Number must not change."
-        const val ADDLABREPORT_COMMAND_REASON_SHOULD_NOT_CHANGE = "When command is Transfer Seizure Reason must not change."
-        const val ADDLABREPORT_COMMAND_CASEID_SHOULD_NOT_CHANGE = "When command is Transfer Case Identifier must not change."
-        const val ADDLABREPORT_COMMAND_HOLDER_SHOULD_NOT_CHANGE = "When command is Transfer Holder must not change."
-        const val ADDLABREPORT_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer participants must not change."
+        const val ADDLABREPORT_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Transfer, there should be one and only one input state."
+        const val ADDLABREPORT_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Transfer, there should be one and only one output state."
+        const val ADDLABREPORT_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Transfer, id must not change."
+        const val ADDLABREPORT_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Transfer, CID must not change."
+        const val ADDLABREPORT_COMMAND_REGNUM_SHOULD_NOT_CHANGE = "When command is Transfer, Register Number must not change."
+        const val ADDLABREPORT_COMMAND_TYPE_SHOULD_NOT_CHANGE = "When command is Transfer, Type Digital Evidence must not change."
+        const val ADDLABREPORT_COMMAND_MODEL_SHOULD_NOT_CHANGE = "When command is Transfer, Model Digital Evidence must not change."
+        const val ADDLABREPORT_COMMAND_MANUFACTURER_SHOULD_NOT_CHANGE = "When command is Transfer, Manufacturer Digital Evidence must not change."
+        const val ADDLABREPORT_COMMAND_SERIAL_SHOULD_NOT_CHANGE = "When command is Transfer, Serial Number must not change."
+        const val ADDLABREPORT_COMMAND_REASON_SHOULD_NOT_CHANGE = "When command is Transfer, Seizure Reason must not change."
+        const val ADDLABREPORT_COMMAND_CASEID_SHOULD_NOT_CHANGE = "When command is Transfer, Case Identifier must not change."
+        const val ADDLABREPORT_COMMAND_HOLDER_SHOULD_NOT_CHANGE = "When command is Transfer, Holder must not change."
+        const val ADDLABREPORT_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Transfer, participants must not change."
         const val ADDLABREPORT_COMMAND_JUST_FOR_ANALYST_ONLY = "When command is Transfer, only holder of digital evidence can do it."
     }
 
@@ -154,7 +154,7 @@ class DigitalEvidenceContract: Contract {
 
                 val input = transaction.inputContractStates.single() as DigitalEvidenceState
                 val output = transaction.outputContractStates.single() as DigitalEvidenceState
-                ADDLABREPORT_COMMAND_JUST_FOR_ANALYST_ONLY using (input.holderEvidence.organization ==  "Org2")
+                ADDLABREPORT_COMMAND_JUST_FOR_ANALYST_ONLY using (input.holderEvidence.commonName ==  "Custodian")
                 ADDLABREPORT_COMMAND_ID_SHOULD_NOT_CHANGE using (input.id == output.id)
                 ADDLABREPORT_COMMAND_CID_SHOULD_NOT_CHANGE using (input.cid == output.cid)
                 ADDLABREPORT_COMMAND_REGNUM_SHOULD_NOT_CHANGE using (input.registerNumber == output.registerNumber)
@@ -164,7 +164,7 @@ class DigitalEvidenceContract: Contract {
                 ADDLABREPORT_COMMAND_SERIAL_SHOULD_NOT_CHANGE using (input.serialNumber == output.serialNumber)
                 ADDLABREPORT_COMMAND_REASON_SHOULD_NOT_CHANGE using (input.seizureReason == output.seizureReason)
                 ADDLABREPORT_COMMAND_CASEID_SHOULD_NOT_CHANGE using (input.caseID == output.caseID)
-                ADDLABREPORT_COMMAND_HOLDER_SHOULD_NOT_CHANGE using (input.labReport == output.labReport)
+                ADDLABREPORT_COMMAND_HOLDER_SHOULD_NOT_CHANGE using (input.holderEvidence == output.holderEvidence)
                 ADDLABREPORT_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE using (
                     input.participants.toSet().intersect(output.participants.toSet()).size >= 2)
             }

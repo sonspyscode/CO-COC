@@ -85,7 +85,7 @@ class TransferDigitalEvidenceFlow: ClientStartableFlow {
 
             // Validasi hanya role dan organisasi tertentu yang diizinkan
             if (myInfo.name.organization !in allowedOrgs) {
-                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to add Evidence Pack in Case Report.")
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to add lab report in evidence report.")
             }
 
             val otherMembers = allMembers.filter { it.name != myInfo.name }

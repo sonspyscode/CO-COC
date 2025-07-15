@@ -5,7 +5,7 @@ Example of RequestBody for triggering the flow via REST:
   "clientRequestId": "createDE-01",
     "flowClassName": "com.r3.developers.chainofcustody.digitalevidence.CreateDigitalEvidenceFlow",
     "requestBody": {
-        "cid":"content identifier",
+        "cid":"QmSkU6zNZqwQFqbMqkdzXYjHw1Ht46on19rnCGBzVGkUxd",
         "registerNumber":"DE-01821398",
         "typeDE":"flashdisk",
         "modelDE":"lite",
@@ -13,7 +13,7 @@ Example of RequestBody for triggering the flow via REST:
         "serialNumber":"Sundis-01821379823",
         "seizureReason":"file yang berisi informasi yang diduga berita hoax",
         "caseID":"CC-001",
-        "otherMember":"CN=Custodian, OU=CrimeInvestigationTeam, O=Org1, L=Makassar, C=ID"
+        "otherMember":["CN=Custodian, OU=CrimeInvestigationTeam, O=Org1, L=Makassar, C=ID"]
    }
 }
  */
@@ -98,8 +98,8 @@ class CreateDigitalEvidenceFlow: ClientStartableFlow {
             val allowedOrgs = listOf("Org1", "Org3")
 
             // Validasi hanya role dan organisasi tertentu yang diizinkan
-            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
-                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to add Evidence Pack in Case Report.")
+            if (myInfo.name.commonName != allowedCommonName || myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only $allowedCommonName from ${allowedOrgs.joinToString()} are allowed to create this report.")
             }
 
             val otherMembers = flowArgs.otherMember.map { memberString ->

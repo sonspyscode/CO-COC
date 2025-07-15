@@ -84,7 +84,7 @@ class TransferCaseReportFlow: ClientStartableFlow {
             val allowedOrgs = listOf("Org1", "Org3")
             // Validasi hanya role dan organisasi tertentu yang diizinkan
             if (myInfo.name.organization !in allowedOrgs) {
-                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Analysis Report.")
+                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to chance the holder of this Report.")
             }
 
             val otherMembers = allMembers.filter { it.name != myInfo.name }

@@ -1,7 +1,7 @@
 /*
 RequestBody for triggering the flow via REST:
 {
-    "clientRequestId": "transferDE-1",
+    "clientRequestId": "validateCR-01",
     "flowClassName": "com.r3.developers.chainofcustody.casereport.ValidationCaseReportFlow",
     "requestBody": {
         "idCase":"identifier untuk suatu digital evidence",
@@ -79,12 +79,12 @@ class ValidationCaseReportFlow: ClientStartableFlow {
             }
 
             // Daftar organisasi atau role yang diizinkan membuat Digital Evidence
-            val allowedCommonName = listOf("Validator", "LawOfficer")
+            val allowedCommonName = listOf("LawOfficer")
             val allowedOrgs = listOf("Org3", "Org4")
 
             // Validasi hanya role dan organisasi tertentu yang diizinkan
-            if (myInfo.name.commonName !in allowedCommonName && myInfo.name.organization !in allowedOrgs) {
-                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Analysis Report.")
+            if (myInfo.name.commonName !in allowedCommonName || myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only ${allowedCommonName.joinToString()} from ${allowedOrgs.joinToString()} are allowed to validate this report.")
             }
 
             val otherMembers = allMembers.filter { it.name != myInfo.name }

@@ -4,7 +4,6 @@ import com.r3.developers.chainofcustody.contracts.DigitalEvidenceContract
 import net.corda.v5.base.types.MemberX500Name
 import net.corda.v5.ledger.utxo.BelongsToContract
 import net.corda.v5.ledger.utxo.ContractState
-import net.corda.v5.ledger.utxo.StateRef
 import java.security.PublicKey
 import java.util.*
 

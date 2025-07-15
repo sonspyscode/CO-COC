@@ -2,7 +2,7 @@
 Example of RequestBody for triggering the flow via REST:
 
 {
-  "clientRequestId": "createAR-07",
+  "clientRequestId": "createAR-01",
     "flowClassName": "com.r3.developers.chainofcustody.analysisreport.CreateAnalysisReportFlow",
     "requestBody": {
         "idEvidence":"content identifier 1",

@@ -13,7 +13,7 @@ package com.r3.developers.chainofcustody.support
 import com.r3.developers.chainofcustody.states.DigitalEvidenceState
 import net.corda.v5.application.flows.ClientRequestBody
 import net.corda.v5.application.flows.ClientStartableFlow
-import net.corda.v5.application.flows.CordaInject
+import net.corda.v5.application.flows.CtordaInject
 import net.corda.v5.application.marshalling.JsonMarshallingService
 import net.corda.v5.base.annotations.Suspendable
 import net.corda.v5.base.types.MemberX500Name

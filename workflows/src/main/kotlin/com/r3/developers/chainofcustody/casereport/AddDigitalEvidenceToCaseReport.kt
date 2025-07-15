@@ -1,18 +1,18 @@
 /*
 RequestBody for triggering the flow via REST:
 {
-    "clientRequestId": "transferDE-1",
+    "clientRequestId": "AddEvidenceToCaseReport-${__UUID}",
     "flowClassName": "com.r3.developers.chainofcustody.casereport.AddDigitalEvidenceToCaseReportFlow",
     "requestBody": {
-        "idCase":"identifier untuk suatu digital evidence",
-        "digitalEvidencePack":"List id evidence"
+        "idCase":"a2829222-7ade-4e78-8111-86e55fa5f3de",
+        "digitalEvidencePack": ["e0bea357-471a-4d3f-b88f-273780ad6c43"]
         }
 }
  */
 
 package com.r3.developers.chainofcustody.casereport
 
-import com.r3.developers.chainofcustody.contracts.DigitalEvidenceContract
+import com.r3.developers.chainofcustody.contracts.CaseReportContract
 import com.r3.developers.chainofcustody.states.CaseReportState
 import com.r3.developers.chainofcustody.states.CustodyInteraction
 import com.r3.developers.chainofcustody.states.DigitalEvidenceState
@@ -78,8 +78,8 @@ class AddDigitalEvidenceToCaseReportFlow : ClientStartableFlow {
             val allowedOrgs = listOf("Org1", "Org3")
 
             // Validasi hanya role dan organisasi tertentu yang diizinkan
-            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
-                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to add Evidence Pack in Case Report.")
+            if (myInfo.name.commonName != allowedCommonName || myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only $allowedCommonName from ${allowedOrgs.joinToString()} are allowed to add Evidence Pack in Case Report.")
             }
 
             // Pendefinisian untuk semua partisipan selain inisiator flow
@@ -109,7 +109,7 @@ class AddDigitalEvidenceToCaseReportFlow : ClientStartableFlow {
                 .setTimeWindowBetween(Instant.now(), Instant.now().plusMillis(Duration.ofDays(1).toMillis()))
                 .addOutputState(newCaseReportState)
                 .addInputState(stateAndRef.ref)
-                .addCommand(DigitalEvidenceContract.AddLabReport())
+                .addCommand(CaseReportContract.AddEvidencePack())
                 .addSignatories(newCaseReportState.participants)
             evidenceRef.forEach { txBuilder.addReferenceState(it.ref) }
 

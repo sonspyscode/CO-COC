@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory
 import java.security.PublicKey
 import java.time.Duration
 import java.time.Instant
-import java.util.UUID
 
 // A class to hold the deserialized arguments required to start the flow.
 // Kelas untuk menampung argumen deserialisasi yang diperlukan untuk memulai aliran.
@@ -103,8 +102,8 @@ class CreateCaseReportFlow: ClientStartableFlow {
             val allowedOrgs = listOf("Org1", "Org3")
 
             // Validasi hanya role dan organisasi tertentu yang diizinkan
-            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
-                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Case Report.")
+            if (myInfo.name.commonName != allowedCommonName || myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only $allowedCommonName from ${allowedOrgs.joinToString()} are allowed to create Case Report.")
             }
 
             val otherMembers = flowArgs.otherMember.map { memberString ->

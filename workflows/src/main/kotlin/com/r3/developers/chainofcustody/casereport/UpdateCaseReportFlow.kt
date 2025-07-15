@@ -1,7 +1,7 @@
 /*
 RequestBody for triggering the flow via REST:
 {
-  "clientRequestId": "updateDE-02",
+  "clientRequestId": "updateCR-01",
     "flowClassName": "com.r3.developers.chainofcustody.casereport.UpdateCaseReportFlow",
     "requestBody": {
         "idCase": "f7dbb529-6655-419f-9871-c75f46b0c593",
@@ -94,8 +94,8 @@ class UpdateCaseReportFlow: ClientStartableFlow {
             val allowedOrgs = listOf("Org1", "Org3")
 
             // Validasi hanya role dan organisasi tertentu yang diizinkan
-            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
-                throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to create Analysis Report.")
+            if (myInfo.name.commonName != allowedCommonName || myInfo.name.organization !in allowedOrgs) {
+                throw CordaRuntimeException("Only $allowedCommonName from ${allowedOrgs.joinToString()} are allowed to update this report.")
             }
 
             val otherMembers = allMembers.filter { it.name != myInfo.name }

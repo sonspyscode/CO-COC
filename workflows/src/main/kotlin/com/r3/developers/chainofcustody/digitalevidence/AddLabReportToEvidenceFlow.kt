@@ -1,11 +1,11 @@
 /*
 RequestBody for triggering the flow via REST:
 {
-    "clientRequestId": "transferDE-1",
+    "clientRequestId": "AddLabReportToEvidenceReport-01",
     "flowClassName": "com.r3.developers.chainofcustody.digitalevidence.AddLabReportToEvidenceFlow",
     "requestBody": {
-        "id":"identifier untuk suatu digital evidence",
-        "labReportRefs":"MemberX500Name"
+        "id":"22a05291-0482-4cf6-92d3-13b088db2546",
+        "labReport":["73355de4-1634-41f9-a6b9-ba13d49a676f", "73355de4-1634-41f9-a6b9-ba13d49a676f"]
         }
 }
  */
@@ -78,7 +78,7 @@ class AddLabReportToEvidenceFlow : ClientStartableFlow {
             val allowedOrgs = listOf("Org1", "Org3")
 
             // Validasi hanya role dan organisasi tertentu yang diizinkan
-            if (myInfo.name.commonName != allowedCommonName && myInfo.name.organization !in allowedOrgs) {
+            if (myInfo.name.commonName != allowedCommonName || myInfo.name.organization !in allowedOrgs) {
                 throw CordaRuntimeException("Only members from ${allowedOrgs.joinToString()} are allowed to add Evidence Pack in Case Report.")
             }
 

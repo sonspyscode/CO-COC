@@ -17,19 +17,19 @@ class AnalysisReportContract: Contract {
         const val PARTICIPANTS_MUST_BE_TWO = "Participants must be two"
         const val TRANSACTION_SHOULD_BE_SIGNED_BY_ALL_PARTICIPANTS = "Transaction must be signed by all participants"
 
-        const val CREATE_COMMAND_SHOULD_HAVE_NO_INPUT_STATES = "When command is Create there should be no input states."
-        const val CREATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is Create there should be one and only one output state."
-        const val CREATE_AR_COMMAND_JUST_FOR_LAB_MEMBER_ONLY = "Only analyst form org2 and org 4 can create analysis report"
+        const val CREATE_COMMAND_SHOULD_HAVE_NO_INPUT_STATES = "When command is create there should be no input states."
+        const val CREATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE =  "When command is create there should be one and only one output state."
+        const val CREATE_AR_COMMAND_JUST_FOR_LAB_MEMBER_ONLY = "Only Lab Member can create analysis report"
 
         const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_INPUT_STATE = "When command is Update there should be one and only one input state."
         const val UPDATE_COMMAND_SHOULD_HAVE_ONLY_ONE_OUTPUT_STATE = "When command is Update there should be one and only one output state."
-        const val UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Update id must not change."
-        const val UPDATE_COMMAND_IDEVIDENCE_SHOULD_NOT_CHANGE = "When command is Update Identifier Evidence must not change."
-        const val UPDATE_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Update CID must not change."
-        const val UPDATE_COMMAND_SHA1_SHOULD_NOT_CHANGE = "When command is Update SHA1 must not change."
-        const val UPDATE_COMMAND_MD5_SHOULD_NOT_CHANGE = "When command is Update MD5 must not change."
-        const val UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Update participants must not change."
-        const val UPDATE_COMMAND_JUST_FOR_HOLDER_ONLY = "When command is Update, only holder of digital evidence can do it."
+        const val UPDATE_COMMAND_ID_SHOULD_NOT_CHANGE = "When command is Update, id must not change."
+        const val UPDATE_COMMAND_IDEVIDENCE_SHOULD_NOT_CHANGE = "When command is Update, Identifier Evidence must not change."
+        const val UPDATE_COMMAND_CID_SHOULD_NOT_CHANGE = "When command is Update, CID must not change."
+        const val UPDATE_COMMAND_SHA1_SHOULD_NOT_CHANGE = "When command is Update, hash value SHA1 must not change."
+        const val UPDATE_COMMAND_MD5_SHOULD_NOT_CHANGE = "When command is Update, hash value MD5 must not change."
+        const val UPDATE_COMMAND_PARTICIPANTS_SHOULD_NOT_CHANGE = "When command is Update, participants must not change."
+        const val UPDATE_COMMAND_JUST_FOR_HOLDER_ONLY = "Only holder can update this evidence report."
     }
 
     // Command Class used to indicate that the transaction should start a new chat.
